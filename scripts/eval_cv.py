@@ -163,7 +163,7 @@ def cached(kind, qids, queries, products, revision, compute):
     libs = " ".join(version(p) for p in ("torch", "sentence-transformers", "transformers", "numpy", "rank-bm25"))
     for part in ((ROOT / "data/products.json").read_bytes(), (ROOT / "baseline_ranker.py").read_bytes(),
                  (ROOT / "semantic_ranker.py").read_bytes(), libs.encode(),
-                 kind.encode(), revision.encode(), "\n".join(qids).encode()):
+                 kind.encode(), revision.encode(), "\n".join(f"{q}\t{queries[q]}" for q in qids).encode()):
         h.update(hashlib.sha256(part).digest())
     path = CACHE / f"{kind}_{h.hexdigest()[:16]}.npz"
     if path.exists():
