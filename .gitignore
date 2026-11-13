@@ -93,3 +93,6 @@ docs/_build/
 
 # Miscellaneous
 miscellaneous/
+
+# Eval score cache (scripts/eval_cv.py)
+.cache/
