@@ -1,0 +1,189 @@
+{
+  "n_queries": 288,
+  "claims": {
+    "baseline": 0.6016,
+    "hybrid": 0.6638,
+    "readme_improvement": 0.2567
+  },
+  "results": {
+    "bm25_depth30": {
+      "nDCG@10": 0.7217,
+      "AP@20": 0.4689,
+      "P@10": 0.5431,
+      "R@30": 0.681,
+      "composite": 0.6089,
+      "queries_scored": 288
+    },
+    "bm25_depth50": {
+      "nDCG@10": 0.6975,
+      "AP@20": 0.4689,
+      "P@10": 0.5431,
+      "R@30": 0.681,
+      "composite": 0.6016,
+      "queries_scored": 288
+    },
+    "minilm_depth30": {
+      "nDCG@10": 0.7607,
+      "AP@20": 0.5342,
+      "P@10": 0.6139,
+      "R@30": 0.7526,
+      "composite": 0.6687,
+      "queries_scored": 288
+    },
+    "minilm_depth50": {
+      "nDCG@10": 0.7386,
+      "AP@20": 0.5342,
+      "P@10": 0.6139,
+      "R@30": 0.7526,
+      "composite": 0.6621,
+      "queries_scored": 288
+    },
+    "mpnet_depth30": {
+      "nDCG@10": 0.7636,
+      "AP@20": 0.5339,
+      "P@10": 0.6132,
+      "R@30": 0.7551,
+      "composite": 0.67,
+      "queries_scored": 288
+    },
+    "mpnet_depth50": {
+      "nDCG@10": 0.743,
+      "AP@20": 0.5339,
+      "P@10": 0.6132,
+      "R@30": 0.7551,
+      "composite": 0.6638,
+      "queries_scored": 288
+    }
+  },
+  "relative_improvement_over_bm25_same_depth": {
+    "minilm_depth30": 0.0982,
+    "minilm_depth50": 0.1006,
+    "mpnet_depth30": 0.1003,
+    "mpnet_depth50": 0.1034
+  },
+  "score_spread": {
+    "minilm": [
+      {
+        "query_id": "s334",
+        "bm25_norm_std": 0.13225633832931047,
+        "bm25_norm_mean": 0.14502414759737808,
+        "semantic_norm_std": 0.05112586170434952,
+        "semantic_norm_mean": 0.6204304099082947,
+        "semantic_norm_min": 0.4641297161579132,
+        "semantic_norm_max": 0.8274792432785034
+      },
+      {
+        "query_id": "s255",
+        "bm25_norm_std": 0.14679944756155802,
+        "bm25_norm_mean": 0.1626646848271441,
+        "semantic_norm_std": 0.0712059736251831,
+        "semantic_norm_mean": 0.5978968739509583,
+        "semantic_norm_min": 0.4301375150680542,
+        "semantic_norm_max": 0.8163286447525024
+      },
+      {
+        "query_id": "s245",
+        "bm25_norm_std": 0.11356674049096174,
+        "bm25_norm_mean": 0.05484957266685813,
+        "semantic_norm_std": 0.07256573438644409,
+        "semantic_norm_mean": 0.5752765536308289,
+        "semantic_norm_min": 0.4245689809322357,
+        "semantic_norm_max": 0.7978501319885254
+      },
+      {
+        "query_id": "s79",
+        "bm25_norm_std": 0.11189374704408406,
+        "bm25_norm_mean": 0.20401641032809237,
+        "semantic_norm_std": 0.06252474337816238,
+        "semantic_norm_mean": 0.598737895488739,
+        "semantic_norm_min": 0.4131929278373718,
+        "semantic_norm_max": 0.8755563497543335
+      },
+      {
+        "query_id": "s319",
+        "bm25_norm_std": 0.1132398182801728,
+        "bm25_norm_mean": 0.11961683201636579,
+        "semantic_norm_std": 0.05158520117402077,
+        "semantic_norm_mean": 0.5916431546211243,
+        "semantic_norm_min": 0.4590093195438385,
+        "semantic_norm_max": 0.8069779872894287
+      }
+    ],
+    "mpnet": [
+      {
+        "query_id": "s334",
+        "bm25_norm_std": 0.13225633832931047,
+        "bm25_norm_mean": 0.14502414759737808,
+        "semantic_norm_std": 0.05128108710050583,
+        "semantic_norm_mean": 0.6183167695999146,
+        "semantic_norm_min": 0.4763185679912567,
+        "semantic_norm_max": 0.8257328867912292
+      },
+      {
+        "query_id": "s255",
+        "bm25_norm_std": 0.14679944756155802,
+        "bm25_norm_mean": 0.1626646848271441,
+        "semantic_norm_std": 0.07550709694623947,
+        "semantic_norm_mean": 0.6128783822059631,
+        "semantic_norm_min": 0.43014803528785706,
+        "semantic_norm_max": 0.8106600046157837
+      },
+      {
+        "query_id": "s245",
+        "bm25_norm_std": 0.11356674049096174,
+        "bm25_norm_mean": 0.05484957266685813,
+        "semantic_norm_std": 0.07543829083442688,
+        "semantic_norm_mean": 0.5962974429130554,
+        "semantic_norm_min": 0.43805453181266785,
+        "semantic_norm_max": 0.823115348815918
+      },
+      {
+        "query_id": "s79",
+        "bm25_norm_std": 0.11189374704408406,
+        "bm25_norm_mean": 0.20401641032809237,
+        "semantic_norm_std": 0.057938966900110245,
+        "semantic_norm_mean": 0.6001827716827393,
+        "semantic_norm_min": 0.473934143781662,
+        "semantic_norm_max": 0.8677359819412231
+      },
+      {
+        "query_id": "s319",
+        "bm25_norm_std": 0.1132398182801728,
+        "bm25_norm_mean": 0.11961683201636579,
+        "semantic_norm_std": 0.04717525839805603,
+        "semantic_norm_mean": 0.6018763184547424,
+        "semantic_norm_min": 0.4863312244415283,
+        "semantic_norm_max": 0.7862411737442017
+      }
+    ]
+  },
+  "models": {
+    "minilm": {
+      "name": "all-MiniLM-L6-v2",
+      "revisions": [
+        "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
+      ],
+      "bm25_weight": 0.3,
+      "semantic_weight": 0.7
+    },
+    "mpnet": {
+      "name": "all-mpnet-base-v2",
+      "revisions": [
+        "e8c3b32edf5434bc2275fc9bab85f82640a19130"
+      ],
+      "bm25_weight": 0.2,
+      "semantic_weight": 0.8
+    }
+  },
+  "env": {
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "device": "cpu",
+    "torch_threads": 24,
+    "torch": "2.15.0+cpu",
+    "sentence-transformers": "6.3.0",
+    "transformers": "5.23.0",
+    "numpy": "2.5.4",
+    "rank-bm25": "0.2.2"
+  }
+}
