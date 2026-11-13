@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 import torch  # noqa: E402
+from huggingface_hub import snapshot_download  # noqa: E402
 
 from baseline_ranker import BM25Ranker, load_json  # noqa: E402
 from semantic_ranker import HybridRanker  # noqa: E402
@@ -32,8 +33,9 @@ SPREAD_QUERIES = 5
 
 
 def revision_of(model_name):
-    snaps = Path.home() / ".cache/huggingface/hub" / f"models--sentence-transformers--{model_name}" / "snapshots"
-    return sorted(p.name for p in snaps.iterdir()) if snaps.exists() else []
+    """Commit hash of the snapshot the default ref resolves to; honours HF_HOME / cache env vars,
+    the same resolution SentenceTransformer(model_name) uses."""
+    return Path(snapshot_download(f"sentence-transformers/{model_name}", local_files_only=True)).name
 
 
 def score(rows, labels_path):
@@ -82,7 +84,7 @@ def main():
     meta_models = {}
     for key, (name, wb, ws) in MODELS.items():
         ranker = HybridRanker(products, model_name=name)
-        meta_models[key] = {"name": name, "revisions": revision_of(name), "bm25_weight": wb, "semantic_weight": ws}
+        meta_models[key] = {"name": name, "revision": revision_of(name), "device": str(ranker.model.device), "bm25_weight": wb, "semantic_weight": ws}
         for d in DEPTHS:
             fn = lambda t, k: ranker.rank(t, top_k=k, bm25_weight=wb, semantic_weight=ws)  # noqa: E731
             results[f"{key}_depth{d}"] = score(to_rows(queries, fn, d), labels)
@@ -100,7 +102,7 @@ def main():
         "score_spread": spreads,
         "models": meta_models,
         "env": {
-            "python": sys.version.split()[0], "platform": platform.platform(), "device": "cpu",
+            "python": sys.version.split()[0], "platform": platform.platform(),
             "torch_threads": torch.get_num_threads(),
             **{p: version(p) for p in ("torch", "sentence-transformers", "transformers", "numpy", "rank-bm25")},
         },

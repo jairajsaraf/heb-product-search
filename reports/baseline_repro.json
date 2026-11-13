@@ -160,17 +160,15 @@
   "models": {
     "minilm": {
       "name": "all-MiniLM-L6-v2",
-      "revisions": [
-        "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
-      ],
+      "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+      "device": "cpu",
       "bm25_weight": 0.3,
       "semantic_weight": 0.7
     },
     "mpnet": {
       "name": "all-mpnet-base-v2",
-      "revisions": [
-        "e8c3b32edf5434bc2275fc9bab85f82640a19130"
-      ],
+      "revision": "e8c3b32edf5434bc2275fc9bab85f82640a19130",
+      "device": "cpu",
       "bm25_weight": 0.2,
       "semantic_weight": 0.8
     }
@@ -178,7 +176,6 @@
   "env": {
     "python": "3.12.10",
     "platform": "Windows-11-10.0.26200-SP0",
-    "device": "cpu",
     "torch_threads": 24,
     "torch": "2.15.0+cpu",
     "sentence-transformers": "6.3.0",
