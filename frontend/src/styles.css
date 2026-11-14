@@ -1,0 +1,79 @@
+@layer ui-sdk;
+
+/* web.css's default control edge and focus colours measure under 3:1 on the page (WCAG 1.4.11): darker greys. */
+:root {
+  --ui-input: light-dark(oklch(0.62 0 0), oklch(0.55 0 0));
+  --ui-ring-border: light-dark(oklch(0.62 0 0), oklch(0.55 0 0));
+  --ui-ring: light-dark(oklch(0.62 0 0), oklch(0.55 0 0));
+}
+
+body {
+  margin: 0;
+  background: var(--ui-background);
+  color: var(--ui-foreground);
+  font-family: var(--ui-font-sans);
+}
+
+main {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.75rem;
+}
+
+.search-form > :first-child {
+  flex: 1 1 16rem;
+}
+
+output {
+  display: block;
+  min-height: 1.5em;
+  margin: 1rem 0 0.5rem;
+}
+
+.results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.results li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--ui-border);
+}
+
+.results p {
+  margin: 0;
+}
+
+.result-line {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.result-line .title {
+  flex: 1;
+}
+
+.rank {
+  min-width: 1.5rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.result-line .label {
+  color: var(--ui-muted-foreground);
+}
+
+.results .scores {
+  margin-left: 2.25rem;
+  color: var(--ui-muted-foreground);
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-font-size);
+}
