@@ -1,6 +1,6 @@
 """FastAPI app: GET /search, GET /healthz.
 
-Run:  uvicorn tamu25.api.app:app   (from the repo root; env HEB_DATA_DIR, HEB_INDEX)
+Run:  uvicorn tamu25.api.app:app   (from the repo root; env HEB_DATA_DIR, HEB_INDEX, HEB_FRONTEND_DIR)
 Startup loads products and the precomputed index (scripts/build_index.py) once, plus the query encoder.
 """
 import json
@@ -12,6 +12,7 @@ from typing import Annotated
 
 import numpy as np
 from fastapi import FastAPI, Query
+from fastapi.staticfiles import StaticFiles
 
 from tamu25.api.search import MODEL_NAME, MODEL_REVISION, Searcher
 
@@ -31,7 +32,7 @@ def build_searcher(data_dir, index_path):
     return Searcher(products, idx["embeddings"], encoder, data_dir=data_dir)
 
 
-def create_app(searcher=None):
+def create_app(searcher=None, frontend_dir=None):
     @asynccontextmanager
     async def lifespan(app):
         app.state.searcher = searcher or build_searcher(
@@ -54,6 +55,12 @@ def create_app(searcher=None):
         out = app.state.searcher.search(q, k)
         out["latency_ms"] = round((time.perf_counter() - t0) * 1000, 1)
         return out
+
+    # Same-origin frontend (frontend/dist from `npm run build`). Mounted last so the API routes above win;
+    # skipped when the build is absent, so the API alone still starts.
+    dist = Path(frontend_dir or os.environ.get("HEB_FRONTEND_DIR", "frontend/dist"))
+    if (dist / "index.html").is_file():
+        app.mount("/", StaticFiles(directory=dist, html=True), name="frontend")
 
     return app
 
