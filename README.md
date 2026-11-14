@@ -32,11 +32,10 @@ Good search results directly impact customer satisfaction and sales. This system
 
 1. **Hybrid Search Technology**
    - Combines keyword matching (BM25 algorithm) with semantic embeddings (pre-trained transformers)
-   - Achieves 66.38% accuracy in ranking products correctly
-   - 25.67% improvement over basic keyword-only search
+   - Headline accuracy and improvement over keyword-only search: **pending Phase 6** (one-time locked-set evaluation)
 
 2. **Scalable & Fast**
-   - Handles 3,287 products and 191 customer queries
+   - Handles 3,287 products, 288 training queries and 191 test queries
    - Returns results in seconds
    - Can be expanded to larger product catalogs
 
@@ -49,10 +48,11 @@ Good search results directly impact customer satisfaction and sales. This system
 
 > **Final system (Phase 3):** the tuned baseline, a linear BM25 + MiniLM hybrid with BM25 weight 0.10–0.15 chosen by 5-fold CV on 230 dev queries. RRF fusion and cross-encoder reranking were tested and did not pass the keep rule, so neither is used. See [`reports/cv_results.md`](reports/cv_results.md) and [`reports/cv_baseline.json`](reports/cv_baseline.json).
 
+> **Headline numbers: pending Phase 6.** The earlier 66.38% / 60.16% / +25.67% figures are not used. 0.6016 (BM25) and 0.6638 (mpnet 0.2/0.8) do reproduce at depth 50 on all 288 training queries, but the relative gain is +10.3%, not +25.67% ([`reports/baseline_repro.md`](reports/baseline_repro.md)). The headline will be the locked-set result. Known gaps in this README: [`reports/adjacent_issues.md`](reports/adjacent_issues.md).
+
 | Metric | Baseline (Keyword Only) | Our System (Hybrid) | Improvement |
 |--------|------------------------|---------------------|-------------|
-| Overall Accuracy | 60.16% | 66.38% | +6.22% |
-| Improvement | - | - | +25.67% |
+| Overall Accuracy | pending Phase 6 | pending Phase 6 | pending Phase 6 |
 
 ### Business Value
 
@@ -131,7 +131,7 @@ TAMU-HEB-2025-30_70/
 │
 ├── data/                       # Dataset files
 │   ├── products.json           # 3,287 H-E-B products
-│   ├── queries_synth_train.json # 191 training queries
+│   ├── queries_synth_train.json # 288 training queries
 │   ├── queries_synth_test.json  # 191 test queries
 │   └── labels_synth_train.json  # Ground truth relevance labels
 │
@@ -144,15 +144,10 @@ TAMU-HEB-2025-30_70/
 │   └── aggregate_leaderboard.py # Leaderboard generator
 │
 ├── teams/                      # Competition submissions
-│   ├── team_alpha/
-│   ├── team_bravo/
-│   ├── ...                    # 8 teams total
-│   └── VibeTribe/             # Our optimized submission
+│   ├── team_alpha/ ... team_echo/  # example submissions
+│   └── team-git-em/            # real submission for the 191 test queries
 │
-├── miscellaneous/              # Non-essential files
-│   ├── Extras/                # Additional documentation
-│   ├── explore_data.py        # Data analysis scripts
-│   └── optimize_semantic.py   # Optimization experiments
+├── reports/                    # Measured results and their source files
 │
 ├── pyproject.toml              # Poetry configuration
 ├── requirements.txt            # Pip dependencies (versioned)
@@ -195,10 +190,10 @@ The `tamu25` CLI provides tools for validation and evaluation:
 
 ```bash
 # Validate a submission file
-tamu25 validate teams/VibeTribe/submission.json
+tamu25 validate teams/team-git-em/submission.json
 
 # Evaluate a submission (with labels)
-tamu25 evaluate teams/VibeTribe/submission.json --labels data/labels_synth_train.json
+tamu25 evaluate teams/team-git-em/submission.json --labels data/labels_synth_train.json
 
 # Show version
 tamu25 version
@@ -260,7 +255,7 @@ BM25 (Best Match 25) is a probabilistic keyword-matching algorithm:
 3. Applies inverse document frequency (IDF) weighting
 4. Boosts important fields (title 3x, brand 2x, categories 2x)
 
-**Performance**: 60.16% composite score
+**Performance**: pending Phase 6
 
 **Strengths**: Fast, explainable, exact match
 **Weaknesses**: Can't understand synonyms or semantic meaning
@@ -276,7 +271,7 @@ Combines BM25 with neural embedding similarity:
 4. Combines scores: `final_score = 0.2 * bm25_score + 0.8 * semantic_score`
 5. Ranks products by combined score
 
-**Performance**: 66.38% composite score (+6.22% absolute, +25.67% relative)
+**Performance**: pending Phase 6
 
 **Strengths**: Understands meaning, handles synonyms, robust to typos
 **Weaknesses**: Computationally expensive, requires GPU for large scales
@@ -342,44 +337,44 @@ composite = 0.30 × nDCG@10 + 0.30 × MAP@20 + 0.25 × Recall@30 + 0.15 × Preci
 ### Products (`data/products.json`)
 
 3,287 H-E-B products with fields:
-- `product_id`: Unique identifier
-- `name`: Product title
-- `brand`: Manufacturer/brand name
+- `product_id`: Unique identifier (string)
+- `title`: Product title
 - `description`: Detailed product description
-- `categories`: Hierarchical category path
-- `ingredients`: List of ingredients (when applicable)
-- `nutrition`: Nutritional information
-- `price`: Price in USD
+- `brand`: Brand name (some values are descriptors such as "Fresh", not brands)
+- `category_path`: Category path as one string, levels joined by ` -> `
+- `safety_warning`: Allergen and safety text (e.g. "Contains: ...")
+- `ingredients`: Ingredient text
 
 **Example:**
 ```json
 {
-  "product_id": "12345",
-  "name": "Organic Almond Milk Unsweetened",
-  "brand": "Blue Diamond",
-  "description": "Smooth and creamy almond milk...",
-  "categories": ["Dairy & Eggs", "Plant-Based Milk", "Almond Milk"],
-  "price": 3.99
+  "product_id": "10045036",
+  "title": "H-E-B Fish Market Party Tray - Seasoned Shrimp Cocktail",
+  "description": "Before everyone comes over to your place, pick up this generous-sized party tray...",
+  "brand": "H-E-B",
+  "category_path": "Meat & seafood -> Seafood -> Shrimp & shellfish",
+  "safety_warning": "Contains: SHRIMP, MILK, ANCHOVY. Caution: CONTAINS SHELLS. ...",
+  "ingredients": "shrimp (shrimp, water, salt), cocktail sauce (...)"
 }
 ```
 
 ### Queries (`data/queries_synth_train.json`, `data/queries_synth_test.json`)
 
-191 customer search queries per split:
-- `query_id`: Unique identifier (1-191)
+288 training queries and 191 test queries:
+- `query_id`: Unique identifier (string, e.g. `s334`)
 - `query`: Natural language search text
 
 **Example:**
 ```json
 {
-  "query_id": 42,
-  "query": "gluten free pasta"
+  "query_id": "s334",
+  "query": "hearty organic soups for dinner"
 }
 ```
 
 ### Labels (`data/labels_synth_train.json`)
 
-54,871 relevance judgments (query-product pairs):
+10,974 relevance judgments (query-product pairs):
 - `query_id`: Links to query
 - `product_id`: Links to product
 - `relevance`: 0 (not relevant) to 3 (highly relevant)
@@ -403,9 +398,12 @@ composite = 0.30 × nDCG@10 + 0.30 × MAP@20 + 0.25 × Recall@30 + 0.15 × Preci
   "bm25_weight": 0.2,
   "semantic_weight": 0.8,
   "training_score": 0.6638,
-  "improvement_over_baseline": 0.256727
+  "improvement_over_baseline": 0.1034,
+  "provenance": { "...": "see final_config.json" }
 }
 ```
+
+`training_score` and `improvement_over_baseline` are the reproduced depth-50 values for the mpnet 0.2/0.8 config ([`reports/baseline_repro.json`](reports/baseline_repro.json)); `provenance` in the file names the source of each. The Phase 3 final system is the tuned MiniLM baseline ([`reports/cv_results.md`](reports/cv_results.md)).
 
 ### Python Configuration (`pyproject.toml`)
 
@@ -465,8 +463,8 @@ make lint      # Code quality checks
 
 | Team | Approach | Composite Score | nDCG@10 | MAP@20 | P@10 | R@30 |
 |------|----------|----------------|---------|---------|------|------|
-| **VibeTribe** | **Hybrid (MPNet)** | **66.38%** | **TBD** | **TBD** | **TBD** | **TBD** |
-| Baseline | BM25 Only | 60.16% | TBD | TBD | TBD | TBD |
+| Hybrid (MPNet) | pending Phase 6 | pending Phase 6 | TBD | TBD | TBD | TBD |
+| Baseline | BM25 Only | pending Phase 6 | TBD | TBD | TBD | TBD |
 
 ### Runtime Performance
 
@@ -753,7 +751,7 @@ Closes #123
 
 **Questions?** Open an issue on [GitLab](https://gitlab.com/mlmodels/tamu-2025-heb/issues)
 
-**Documentation**: See `miscellaneous/Extras/` for additional documentation
+**Documentation**: See `reports/` for measured results
 
 **Project Homepage**: https://gitlab.com/mlmodels/tamu-2025-heb
 
