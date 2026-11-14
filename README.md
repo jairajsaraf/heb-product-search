@@ -47,6 +47,8 @@ Good search results directly impact customer satisfaction and sales. This system
 
 ### Performance Metrics
 
+> **Final system (Phase 3):** the tuned baseline, a linear BM25 + MiniLM hybrid with BM25 weight 0.10–0.15 chosen by 5-fold CV on 230 dev queries. RRF fusion and cross-encoder reranking were tested and did not pass the keep rule, so neither is used. See [`reports/cv_results.md`](reports/cv_results.md) and [`reports/cv_baseline.json`](reports/cv_baseline.json).
+
 | Metric | Baseline (Keyword Only) | Our System (Hybrid) | Improvement |
 |--------|------------------------|---------------------|-------------|
 | Overall Accuracy | 60.16% | 66.38% | +6.22% |
