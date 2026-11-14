@@ -293,6 +293,18 @@ Smoke test against the public URL (confirmed by curl, 2026-11-14):
 - "Agentic browsing" is a category in this Lighthouse version; which of its audits applied to this page was not checked.
 - Doc read: the Lighthouse readme, "Using the Node CLI" (github.com/GoogleChrome/lighthouse/blob/main/readme.md), for `--output`, `--output-path`, `--chrome-flags`, `--quiet` and `--no-enable-error-reporting`.
 
+**Health route fix and redeploy (2026-11-14, after PR #9; requested by the owner).** The route was renamed from `/healthz` to `/health` in `tamu25/api/app.py`, `tests/test_api.py` and the dev proxy in `frontend/vite.config.ts`, because Cloud Run reserves some paths ending in `z`. The ranking code, model and weights are untouched, so 6.2 still describes what is served. The smoke test and Lighthouse run above were made against the previous revision.
+
+| Step | Command | Exit | Result |
+|---|---|---|---|
+| Tests | `python -m pytest tests -q` | 0 | 20 passed |
+| Build | `docker build -t heb-search:6c .` | 0 | 2.25 GB; the frontend stage (`npm ci`, `tsc -b`, `vite build`) passed with the proxy change |
+| Local smoke | `docker run -p 8081:8080 heb-search:6c`, curl | n/a | `/health` 200 `{"status":"ok","mode":"hybrid"}`; `/healthz` 404 from the app; `/search` 200; `k=999` 422; `/` 200 |
+| Push | `docker push us-central1-docker.pkg.dev/product-search-514708/heb-search/heb-search:6c` | 0 | digest `sha256:5655ed95…` |
+| Deploy | `gcloud run deploy heb-search --image …:6c --region us-central1 --project product-search-514708 --allow-unauthenticated --max-instances 1 --max 1 --memory 2Gi --cpu 1 --port 8080` | 0 | revision `heb-search-00002-c7j`, 100% of traffic |
+
+Live check after the deploy (confirmed by curl and `gcloud run services describe`): `GET /health` 200 `{"status":"ok","mode":"hybrid"}`; `GET /search?q=gluten free pasta&k=3` 200; `k=999` 422; `GET /` 200. Settings unchanged: 1 CPU, 2 GiB, revision and service maximum both 1 instance, public access. `/healthz` still returns Google's 404, as expected. The frontend unit tests were not run locally (no `node_modules` in this worktree); the image build compiled the frontend.
+
 ## 7. Open items
 
 Items 1 to 5 were the pre-run list from 6a; all are settled.
@@ -319,6 +331,6 @@ Found in 6b, listed, not fixed:
 14. The judged-only difference on dev (tuned vs BM25) was never bootstrapped, so the dev and locked judged-only results cannot be compared interval to interval.
 15. The human kit's first side-A draw was discarded because its key reached the build log (6.5). The kit is blind to the owner, not to the session that built it.
 16. `scripts/eval_cv.py` imports `tamu25.api.search` for the pin, so the harness now depends on the API module's constants.
-17. `GET /healthz` returns Google's 404 on Cloud Run because paths ending in `z` can be reserved (6.6). The route works locally and in the container. Renaming it would touch `tamu25/api/app.py`, `tests/test_api.py` and `frontend/vite.config.ts`.
+17. ~~`GET /healthz` returns Google's 404 on Cloud Run~~: renamed to `/health` and redeployed (6.6). Section 5 still shows `/healthz`, which was the route at the time.
 18. ~~The one-instance cap was revision-level only~~: the owner set the service-level maximum to 1 (6.6).
 19. The frontend has no favicon (`/favicon.ico` is a 404, logged as a console error) and no meta description (6.6, Lighthouse).

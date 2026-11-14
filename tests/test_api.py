@@ -16,9 +16,9 @@ def client(repo_root):
         yield c, products
 
 
-def test_healthz(client):
+def test_health(client):
     c, _ = client
-    assert c.get("/healthz").json() == {"status": "ok", "mode": "bm25"}
+    assert c.get("/health").json() == {"status": "ok", "mode": "bm25"}
 
 
 def test_frontend_is_served_same_origin_and_api_routes_win(repo_root, tmp_path):
@@ -26,10 +26,10 @@ def test_frontend_is_served_same_origin_and_api_routes_win(repo_root, tmp_path):
     products = json.loads((repo_root / "tests" / "data" / "products.json").read_text(encoding="utf-8"))
     with fastapi_testclient.TestClient(create_app(Searcher(products), frontend_dir=tmp_path)) as c:
         assert "Search products" in c.get("/").text
-        assert c.get("/healthz").json() == {"status": "ok", "mode": "bm25"}
+        assert c.get("/health").json() == {"status": "ok", "mode": "bm25"}
         assert c.get("/search", params={"q": products[0]["title"].split()[0]}).json()["mode"] == "bm25"
     with fastapi_testclient.TestClient(create_app(Searcher(products), frontend_dir=tmp_path / "missing")) as c:
-        assert c.get("/").status_code == 404 and c.get("/healthz").status_code == 200
+        assert c.get("/").status_code == 404 and c.get("/health").status_code == 200
 
 
 def test_search_shape_and_limits(client):

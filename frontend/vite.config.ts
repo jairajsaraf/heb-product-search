@@ -6,6 +6,6 @@ const api = "http://127.0.0.1:8000"
 
 export default defineConfig({
   plugins: [react()],
-  server: { proxy: { "/search": api, "/healthz": api } },
+  server: { proxy: { "/search": api, "/health": api } },
   test: { environment: "jsdom", setupFiles: ["./src/test/setup.ts"], css: false },
 })

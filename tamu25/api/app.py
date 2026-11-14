@@ -1,4 +1,4 @@
-"""FastAPI app: GET /search, GET /healthz.
+"""FastAPI app: GET /search, GET /health.
 
 Run:  uvicorn tamu25.api.app:app   (from the repo root; env HEB_DATA_DIR, HEB_INDEX, HEB_FRONTEND_DIR)
 Startup loads products and the precomputed index (scripts/build_index.py) once, plus the query encoder.
@@ -42,8 +42,8 @@ def create_app(searcher=None, frontend_dir=None):
 
     app = FastAPI(title="HEB product search", lifespan=lifespan)
 
-    @app.get("/healthz")
-    def healthz():
+    @app.get("/health")
+    def health():
         return {"status": "ok", "mode": app.state.searcher.mode}
 
     @app.get("/search")
