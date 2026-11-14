@@ -1,0 +1,8 @@
+# Runtime pins for the API image (subset of requirements.txt, plus the web stack).
+# torch is installed separately from the CPU index in the Dockerfile.
+fastapi==0.156.1
+uvicorn==0.54.0
+numpy==2.5.4
+rank-bm25==0.2.2
+sentence-transformers==6.3.0
+transformers==5.23.0

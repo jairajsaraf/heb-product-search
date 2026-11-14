@@ -96,3 +96,6 @@ miscellaneous/
 
 # Eval score cache (scripts/eval_cv.py)
 .cache/
+
+# API index (built by scripts/build_index.py)
+artifacts/
