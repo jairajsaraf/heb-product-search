@@ -2,7 +2,10 @@
 
   .venv/Scripts/python scripts/eval_cv.py --make-split   # once; writes data/split_v1.json
   .venv/Scripts/python scripts/eval_cv.py                # writes reports/cv_baseline.json
-  .venv/Scripts/python scripts/eval_cv.py --final        # Phase 6 only: also scores the 58 locked queries
+  .venv/Scripts/python scripts/eval_cv.py --final        # Phase 6, once: scores the 58 locked queries
+
+--final scores BM25 and the config pinned in tamu25/api/search.py (pre-registered in
+reports/holdout_prereg.md), and refuses to run if reports/holdout_final.json exists.
 
 Rankings come from cached raw BM25 scores and cosine similarities, recombined exactly as
 BM25Ranker.rank / HybridRanker.rank do. Every ranking is cut at DEPTH=30.
@@ -14,6 +17,7 @@ import json
 import platform
 import random
 import statistics
+import subprocess
 import sys
 from importlib.metadata import version
 from pathlib import Path
@@ -25,10 +29,12 @@ sys.path.insert(0, str(ROOT))
 
 from baseline_ranker import load_json, preprocess_text  # noqa: E402
 from tamu25.evaluate import _build_label_lookup  # noqa: E402
+from tamu25.api.search import BM25_WEIGHT, MODEL_NAME, MODEL_REVISION  # noqa: E402
 from tamu25.metrics import average_precision, ndcg_at_k, precision_at_k, recall_at_k  # noqa: E402
 
 SPLIT = ROOT / "data/split_v1.json"
 CACHE = ROOT / ".cache/eval_cv"
+FINAL_OUT = ROOT / "reports/holdout_final.json"
 DEPTH = 30
 SPLIT_SEED = 20261113
 N_LOCKED, N_FOLDS, FOLD_SIZE = 58, 5, 46
@@ -227,12 +233,14 @@ def main():
     args = ap.parse_args()
     if args.make_split:
         return make_split()
+    if args.final and FINAL_OUT.exists():  # before anything locked is read
+        sys.exit(f"{FINAL_OUT} exists; the locked set is scored once, refusing to run again")
 
     import torch
     from repro_baseline import revision_of
 
     split = load_split()
-    queries, labels, total_rel = load_data(split, args.final)
+    queries, labels, total_rel = load_data(split)  # dev only; locked rows are loaded after the pin checks
     products = load_json(ROOT / "data/products.json")
     revisions = {m: revision_of(n) for m, n in MODELS.items()}
 
@@ -282,17 +290,37 @@ def main():
     }
 
     if args.final:
+        pinned = (next(m for m, n in MODELS.items() if n == MODEL_NAME), BM25_WEIGHT)  # what the API ships
+        best, _ = tune(evals, range(len(dev)))
+        if best != pinned or revisions[pinned[0]] != MODEL_REVISION:
+            sys.exit(f"pin mismatch: API ships {pinned} at {MODEL_REVISION}, all-dev tuning picks {best}, cached "
+                     f"revision {revisions[pinned[0]]}; locked set not read")
+
+        def git(*a):
+            return subprocess.run(["git", *a], cwd=ROOT, capture_output=True, text=True).stdout.strip()
+
+        queries, labels, total_rel = load_data(split, True)
         locked = locked_ids(split, True)
-        lb, lc, _ = scores_for(locked, "locked")
-        best, train_score = tune(evals, range(len(dev)))
-        levals = score_all(locked, lb, lc, products, labels, total_rel)
-        out = {"meta": meta, "config_tuned_on_all_dev": {"model": best[0], "bm25_weight": best[1],
-                                                         "dev_composite": round(train_score, 4)},
-               "systems": {"bm25": summary(levals["bm25"]), "tuned_hybrid": summary(levals[best])},
-               "bootstrap_tuned_vs_bm25": paired_bootstrap([x["composite"] for x in levals[best]],
-                                                           [x["composite"] for x in levals["bm25"]])}
-        (ROOT / "reports/holdout_final.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
-        print(json.dumps(out["systems"], indent=2))
+        lb, _ = cached("bm25_locked", locked, queries, products, "", bm25_scores)
+        lc, device = cached(f"cos_{pinned[0]}_locked", locked, queries, products, revisions[pinned[0]],
+                            cosine_fn(MODEL_NAME))
+        pids = [p["product_id"] for p in products]
+        score = lambda top: [evaluate([pids[i] for i in top(j)], labels[q], total_rel[q])  # noqa: E731
+                             for j, q in enumerate(locked)]
+        b, h = score(lambda j: bm25_top(lb[j])), score(lambda j: hybrid_top(lb[j], lc[j], pinned[1]))
+        out = {"meta": meta | {"git_head": git("rev-parse", "HEAD"), "git_dirty": bool(git("status", "--porcelain")),
+                               "pre_registration": "reports/holdout_prereg.md", "locked_device": device},
+               "config_scored": {"model": pinned[0], "bm25_weight": pinned[1], "source": "tamu25/api/search.py",
+                                 "dev_composite": round(sum(x["composite"] for x in evals[pinned]) / len(dev), 4),
+                                 "all_dev_tuning_pick": list(best)},
+               "note": "tuned_hybrid is both the tuned baseline and the final system (no Phase 3 change was kept), "
+                       "so the comparison is against BM25",
+               "systems": {"bm25": summary(b), "tuned_hybrid": summary(h)},
+               "bootstrap_tuned_vs_bm25": {k: paired_bootstrap([x[k] for x in h], [x[k] for x in b])
+                                           for k in ("composite", "judged_only")}}
+        with open(FINAL_OUT, "x", encoding="utf-8") as f:  # exclusive create: never overwrites
+            json.dump(out, f, indent=2)
+        print(json.dumps({k: out[k] for k in ("config_scored", "systems", "bootstrap_tuned_vs_bm25")}, indent=2))
         return
 
     keep = ("composite", "judged_only", "unjudged_top10")

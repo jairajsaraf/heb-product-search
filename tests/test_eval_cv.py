@@ -64,3 +64,19 @@ def test_bootstrap_self_is_exactly_zero():
     a = np.random.default_rng(0).random(230)
     b = eval_cv.paired_bootstrap(a, a)
     assert b["mean_diff"] == 0.0 and b["ci95"] == [0.0, 0.0]
+
+
+def test_final_refuses_if_output_exists(tmp_path, monkeypatch):
+    out = tmp_path / "holdout_final.json"
+    out.write_text("first run", encoding="utf-8")
+
+    def reached(*a, **k):
+        raise AssertionError("--final went past the guard")
+
+    monkeypatch.setattr(eval_cv, "FINAL_OUT", out)
+    monkeypatch.setattr(eval_cv, "load_split", reached)
+    monkeypatch.setattr(eval_cv, "load_data", reached)
+    monkeypatch.setattr(sys, "argv", ["eval_cv.py", "--final"])
+    with pytest.raises(SystemExit, match="refusing to run again"):
+        eval_cv.main()
+    assert out.read_text(encoding="utf-8") == "first run"

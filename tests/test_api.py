@@ -46,3 +46,23 @@ def test_search_shape_and_limits(client):
     assert c.get("/search", params={"q": word, "k": 31}).status_code == 422
     assert c.get("/search", params={"q": ""}).status_code == 422
     assert c.get("/search", params={"q": "x" * 201}).status_code == 422
+
+
+def test_locked_labels_never_served_on_real_data(repo_root):
+    """Reviewer item 4: the locked-label filter, on the real data/ files. Asserts on counts only, so a failure
+    cannot print a locked query text."""
+    data = repo_root / "data"
+    read = lambda n: json.loads((data / n).read_text(encoding="utf-8"))  # noqa: E731
+    locked = set(read("split_v1.json")["locked"])
+    s = Searcher(read("products.json"), data_dir=data)  # BM25-only: no model needed
+    assert len(locked) == 58 and not locked & set(s.labels) and not locked & set(s.by_text.values())
+    n = {"locked_ok": 0, "dev_ok": 0, "dev_with_positive": 0}
+    for q in read("queries_synth_train.json"):
+        out = s.search(q["query"], k=30)
+        labels = [r["label"] for r in out["results"]]
+        if q["query_id"] in locked:
+            n["locked_ok"] += out["split"] == "held_out" and all(x is None for x in labels)
+        else:
+            n["dev_ok"] += out["split"] == "dev" and all(isinstance(x, int) for x in labels)
+            n["dev_with_positive"] += any(labels)
+    assert n["locked_ok"] == 58 and n["dev_ok"] == 230 and n["dev_with_positive"] > 200
