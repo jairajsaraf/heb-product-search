@@ -32,7 +32,7 @@ Good search results directly impact customer satisfaction and sales. This system
 
 1. **Hybrid Search Technology**
    - Combines keyword matching (BM25 algorithm) with semantic embeddings (pre-trained transformers)
-   - Headline accuracy and improvement over keyword-only search: **pending Phase 6** (one-time locked-set evaluation)
+   - On 58 held-out queries, scored once, the hybrid reaches an official composite of **0.6998** against **0.6273** for keyword-only search: **+0.0725, 95% CI [+0.0404, +0.1068]** ([`reports/holdout_final.json`](reports/holdout_final.json))
 
 2. **Scalable & Fast**
    - Handles 3,287 products, 288 training queries and 191 test queries
@@ -48,11 +48,20 @@ Good search results directly impact customer satisfaction and sales. This system
 
 > **Final system (Phase 3):** the tuned baseline, a linear BM25 + MiniLM hybrid with BM25 weight 0.10–0.15 chosen by 5-fold CV on 230 dev queries. RRF fusion and cross-encoder reranking were tested and did not pass the keep rule, so neither is used. See [`reports/cv_results.md`](reports/cv_results.md) and [`reports/cv_baseline.json`](reports/cv_baseline.json).
 
-> **Headline numbers: pending Phase 6.** The earlier 66.38% / 60.16% / +25.67% figures are not used. 0.6016 (BM25) and 0.6638 (mpnet 0.2/0.8) do reproduce at depth 50 on all 288 training queries, but the relative gain is +10.3%, not +25.67% ([`reports/baseline_repro.md`](reports/baseline_repro.md)). The headline will be the locked-set result. Known gaps in this README: [`reports/adjacent_issues.md`](reports/adjacent_issues.md).
+> **Headline (Phase 6, locked set).** 58 queries were set aside before any tuning or error analysis and scored exactly once, with the config fixed in advance ([`reports/holdout_prereg.md`](reports/holdout_prereg.md)). The headline is the paired difference between the final system (BM25 + MiniLM, BM25 weight 0.10, the config the API serves) and BM25 alone: **+0.0725 official composite, 95% CI [+0.0404, +0.1068]** (paired bootstrap over the 58 queries, 10,000 resamples; every resample above 0). Source: [`reports/holdout_final.json`](reports/holdout_final.json), written by `scripts/eval_cv.py --final`.
 
-| Metric | Baseline (Keyword Only) | Our System (Hybrid) | Improvement |
-|--------|------------------------|---------------------|-------------|
-| Overall Accuracy | pending Phase 6 | pending Phase 6 | pending Phase 6 |
+| Metric (58 locked queries, depth 30) | Baseline (Keyword Only) | Our System (Hybrid) | Difference [95% CI] | Source |
+|--------|------------------------|---------------------|-------------|--------|
+| Official composite | 0.6273 | 0.6998 | +0.0725 [+0.0404, +0.1068] | [`holdout_final.json`](reports/holdout_final.json) |
+| Judged-only composite | 0.7248 | 0.7311 | +0.0063 [−0.0143, +0.0271] | [`holdout_final.json`](reports/holdout_final.json) |
+| Unjudged products in top 10 | 24.5% | 6.9% | | [`holdout_final.json`](reports/holdout_final.json) |
+
+How to read this:
+
+- **The official gain is real on unseen queries** and matches the cross-validated estimate on the 230 dev queries: 0.6042 → 0.6759, +0.0717 [+0.0552, +0.0886] ([`reports/cv_baseline.json`](reports/cv_baseline.json)). As a ratio it is 0.6998 / 0.6273 = +11.6%.
+- **The judged-only gain is not distinguishable from zero.** The official metric counts every unlabelled product as irrelevant, and BM25 puts far more unlabelled products in its top 10. Much of the official gain therefore comes from the hybrid returning products that have labels. Whether BM25's unlabelled results were actually bad is unknown from this data.
+- **Not every locked number was unseen.** The locked-set means of BM25 (and of the fixed MiniLM 0.3/0.7 and mpnet 0.2/0.8 hybrids, which were not scored here) could already be derived from the Phase 0 numbers over all 288 queries and the dev numbers: (288 × pooled − 230 × dev) / 58 gives ≈ 0.6275 for BM25, and the run measured 0.6273. The hybrid's locked score and the per-query differences behind the interval were not derivable, which is why the paired bootstrap is the headline rather than either mean.
+- The earlier 66.38% / 60.16% / +25.67% figures are not used. 0.6016 (BM25) and 0.6638 (mpnet 0.2/0.8) do reproduce at depth 50 on all 288 training queries, but the relative gain is +10.3%, not +25.67% ([`reports/baseline_repro.md`](reports/baseline_repro.md)). Known gaps in this README: [`reports/adjacent_issues.md`](reports/adjacent_issues.md).
 
 ### Business Value
 
@@ -255,7 +264,7 @@ BM25 (Best Match 25) is a probabilistic keyword-matching algorithm:
 3. Applies inverse document frequency (IDF) weighting
 4. Boosts important fields (title 3x, brand 2x, categories 2x)
 
-**Performance**: pending Phase 6
+**Performance**: official composite 0.6273 on the 58 locked queries, 0.6042 on the 230 dev queries ([`reports/holdout_final.json`](reports/holdout_final.json), [`reports/cv_baseline.json`](reports/cv_baseline.json))
 
 **Strengths**: Fast, explainable, exact match
 **Weaknesses**: Can't understand synonyms or semantic meaning
@@ -271,7 +280,7 @@ Combines BM25 with neural embedding similarity:
 4. Combines scores: `final_score = 0.2 * bm25_score + 0.8 * semantic_score`
 5. Ranks products by combined score
 
-**Performance**: pending Phase 6
+**Performance**: official composite 0.6998 on the 58 locked queries for the final system, which is MiniLM at BM25 weight 0.10 and not the mpnet 0.2/0.8 config described above ([`reports/holdout_final.json`](reports/holdout_final.json)). The mpnet 0.2/0.8 config was not scored on the locked set; on the 230 dev queries it scores 0.6653 against 0.6759 for the tuned system ([`reports/cv_baseline.json`](reports/cv_baseline.json)).
 
 **Strengths**: Understands meaning, handles synonyms, robust to typos
 **Weaknesses**: Computationally expensive, requires GPU for large scales
@@ -459,14 +468,25 @@ make lint      # Code quality checks
 
 ## Performance Benchmarks
 
-### Training Set Performance
+### Locked-Set Performance
 
-| Team | Approach | Composite Score | nDCG@10 | MAP@20 | P@10 | R@30 |
+58 held-out training queries, depth 30, scored once ([`reports/holdout_final.json`](reports/holdout_final.json)):
+
+| System | Approach | Composite Score | nDCG@10 | MAP@20 | P@10 | R@30 |
 |------|----------|----------------|---------|---------|------|------|
-| Hybrid (MPNet) | pending Phase 6 | pending Phase 6 | TBD | TBD | TBD | TBD |
-| Baseline | BM25 Only | pending Phase 6 | TBD | TBD | TBD | TBD |
+| Final system | BM25 + MiniLM, BM25 weight 0.10 | 0.6998 | 0.7590 | 0.5662 | 0.6707 | 0.8063 |
+| Baseline | BM25 Only | 0.6273 | 0.7189 | 0.4714 | 0.6000 | 0.7208 |
 
 ### Runtime Performance
+
+Measured ([`reports/latency.json`](reports/latency.json), `scripts/latency.py`): per query through the function behind `GET /search`, on the 191 test queries, warm, CPU, 24 torch threads, Intel Family 6 Model 183 laptop (32 logical CPUs), Windows 11:
+
+| System | p50 | p95 |
+|---|---|---|
+| Final system (hybrid) | 22.2 ms | 29.3 ms |
+| BM25 only | 7.0 ms | 10.4 ms |
+
+The figures below are from the original README and have no source file:
 
 - **BM25 Ranking**: ~0.5 seconds for 191 queries
 - **Embedding Generation**: ~30 seconds (one-time, cached)

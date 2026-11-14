@@ -1,6 +1,6 @@
 # Verification report
 
-Status: **Phase 6a only.** Sections 1 to 5 were produced without opening the 58 locked queries. Section 6 (locked-set run, README numbers, human kit, deploy) is **pending Phase 6b**. Nothing here was run with `--final`.
+Status: **Phases 6a and 6b.** Sections 1 to 5 (6a) were produced without opening the 58 locked queries. Section 6 (6b) records the single `--final` run and what followed it. The service was deployed to Cloud Run by the owner and audited with Lighthouse (6.6).
 
 Base: `main` at `6f96a35` (Phase 5b merged). Claims are marked **confirmed** (source named), **inferred**, or **unknown**.
 
@@ -154,20 +154,171 @@ The image sets `HF_HUB_OFFLINE=1`, and the container started and served without 
 
 Inferred: the working set is flat across queries, so about 0.6 GB is the number to size against; a 1 GiB Cloud Run limit is plausible but untested. Cold-start time was **not measured**. The host has 15.5 GiB and many cores, so this says nothing about Cloud Run CPU limits. The final choice waits for 6b.
 
-## 6. Pending Phase 6b (not done, placeholders)
+## 6. Phase 6b (2026-11-14)
 
-- [ ] **Locked-set run:** one `--final` run, tuned baseline vs final system on the 58 locked queries, with interval. Output `reports/holdout_final.json`. *Pending.*
-- [ ] **README headline numbers**, each linking its output file (M9). *Pending.*
-- [ ] **Human kit:** `reports/human_kit.md`, `reports/human_kit_key.json`. *Pending.*
-- [ ] **Latency (M13)** on the 191 unlabelled test queries, warm, CPU. *Pending; Phase 3 latency used 46 dev queries.*
-- [ ] **Cloud Run deploy and Lighthouse run:** needs approval by name, a project id and a region. Service capped at one instance. *Pending.*
+Base: `origin/main` at `794dd19` (PR #8 merged), branch `claude/phase6b-final-b295de`. Every command below was run from the repo root with `.venv\Scripts\python.exe` and `HF_HUB_OFFLINE=1`.
 
-## 7. Open items before 6b (from the reviewer and from this phase; none fixed)
+### 6.1 Settled before the run
 
-1. Decide and record which config is the headline (reviewer item 3). The `--final` path re-tunes on all 230 dev queries; the API is pinned to MiniLM at BM25 0.10.
-2. Add a refuse-if-exists guard on `reports/holdout_final.json` (item 3).
-3. Decide whether the image should ship the locked labels (item 2) and whether `split:"held_out"` should be exposed (item 5).
-4. Add a Python test for the locked-label filter on real `data/` files (item 4).
-5. In the 6b write-up, state that BM25 and fixed-hybrid locked means are derivable from Phase 0 pooled numbers (item 1) and make the tuned-vs-BM25 bootstrap the headline.
-6. Seen in the UI, not in the reviewer report: a result title contains a literal `&nbsp;` ("White&nbsp;Cheddar Mac & Cheese"), so product titles carry unescaped HTML entities. Adjacent; not fixed.
-7. `make evaluate` default exits 0 with composite 0.0 on 191 unlabelled queries (section 2). Adjacent; not fixed.
+Decisions are the owner's, recorded in [holdout_prereg.md](holdout_prereg.md) and committed as `9d1d826` **before** the locked set was opened.
+
+| Item | Outcome |
+|---|---|
+| Headline config (reviewer item 3) | Pinned to what the API ships: MiniLM, BM25 weight 0.10. `--final` scores the constants imported from `tamu25/api/search.py` and exits before reading locked rows if all-dev tuning or the model revision disagrees. |
+| Once-only guard (item 3) | `--final` refuses to start if `reports/holdout_final.json` exists; the file is written with exclusive create. Test `test_final_refuses_if_output_exists`. |
+| Image ships locked labels (item 2) | Kept, accepted. The repo is public (confirmed, `gh repo view --json visibility`), so the labels are already downloadable. |
+| `split:"held_out"` (item 5) | Kept, accepted (spec M8; membership is public in `data/split_v1.json`). |
+| Filter test on real data (item 4) | Added: `test_locked_labels_never_served_on_real_data`. 58 locked queries return `held_out` and no label; 230 dev queries return labels. |
+
+Checks before the run (confirmed, exit codes read from the shell, except where marked):
+
+| Command | Exit | Result |
+|---|---|---|
+| `python -m pytest tests -q` (before any change) | 0 (inferred: the output was piped through `tail`, so the code was not captured) | 18 passed |
+| `python -m pytest tests -q` (after guard, pin, tests) | 0 | **20 passed** |
+| `python scripts/eval_cv.py` | 0 | `reports/cv_baseline.json` byte-identical (`git diff --quiet`) |
+| Rehearsal of the `--final` branch, dev fold 0 posing as locked, output to a scratch file | 0 | BM25 composite 0.5741 = the fold-0 mean in `cv_baseline.json`. No locked row read. |
+| Same rehearsal again, scratch output present | 1 | "exists; the locked set is scored once, refusing to run again" |
+
+### 6.2 The locked-set run
+
+Command: `python scripts/eval_cv.py --final`. **Exit code 0.** Run once, from commit `9d1d826` with a clean tree (`meta.git_head`, `meta.git_dirty: false` in the output). Output: [holdout_final.json](holdout_final.json). 58 locked queries, depth 30. All numbers below are confirmed from that file.
+
+The tuned hybrid is both the tuned baseline and the final system (no Phase 3 change was kept), so "tuned baseline vs final system" is 0 by construction. The comparison is against BM25.
+
+| System | Official composite | Judged-only | Unjudged in top 10 | nDCG@10 | AP@20 | P@10 | R@30 |
+|---|---|---|---|---|---|---|---|
+| BM25 | 0.6273 | 0.7248 | 0.245 | 0.7189 | 0.4714 | 0.6000 | 0.7208 |
+| **Tuned hybrid (final system)** | **0.6998** | 0.7311 | 0.069 | 0.7590 | 0.5662 | 0.6707 | 0.8063 |
+
+Paired bootstrap, tuned hybrid minus BM25, 10,000 resamples, seed 20261113, 95% percentile interval, 58 queries:
+
+| Metric | Δ [95% CI] | Resamples above 0 |
+|---|---|---|
+| **Official composite (headline)** | **+0.0725 [+0.0404, +0.1068]** | 100% |
+| Judged-only composite | +0.0063 [−0.0143, +0.0271] | 72.6% |
+
+Reading it:
+
+- **The official gain holds on the locked set** and agrees with the dev estimate from section 3 (+0.0717 [+0.0552, +0.0886]). The locked interval is wider because it rests on 58 queries, not 230.
+- **The judged-only gain does not.** Its interval includes 0. On dev the judged-only means were 0.7046 (BM25) and 0.7227 (tuned); that difference was never bootstrapped, so whether it was significant on dev is unknown.
+- Inferred: much of the official gain comes from the hybrid putting labelled products where BM25 puts unlabelled ones (unjudged in top 10: 24.5% vs 6.9%), since the official metric scores every unlabelled product as irrelevant. Whether those unlabelled BM25 results are actually irrelevant cannot be told from these labels.
+- **Reviewer item 1.** The BM25 locked mean was derivable beforehand as (288 × 0.6089 − 230 × 0.6042) / 58 ≈ 0.6275; the run gives 0.6273. The fixed hybrids (≈ 0.6937 MiniLM 0.3/0.7, ≈ 0.6886 mpnet 0.2/0.8) are derivable the same way and were not scored. The tuned hybrid's locked mean and the per-query differences were not derivable, so the bootstrap is the headline, not either mean.
+- Config scored (`config_scored`): MiniLM at revision `1110a243…`, BM25 weight 0.10, dev composite 0.6788; all-dev tuning independently picks the same config.
+- Nothing was re-tuned or changed after the run. No per-query locked value was printed, stored or inspected; the output file holds aggregates only.
+
+### 6.3 README headline numbers (M9)
+
+Written from `holdout_final.json`, each linked to its file: the Key Features bullet, the Performance Metrics block and table (with the derivability statement and the judged-only caveat), the two "Performance" lines under Algorithm Details, and the benchmark table (now "Locked-Set Performance"). A grep of the README for "pending Phase 6" and "TBD" returns nothing. The relative gain +11.6% is my arithmetic (0.6998 / 0.6273), not a field in the file.
+
+### 6.4 Latency (M13)
+
+Command: `python scripts/build_index.py` (exit 0, `artifacts/index.npz` 3287 × 384), then `python scripts/latency.py` (**exit 0**). Output: [latency.json](latency.json).
+
+Per query through `Searcher.search(q, 30)`, the function behind `GET /search` (no HTTP layer). 191 unlabelled test queries, one untimed warm-up pass over all of them, then one timed pass with the two systems interleaved. Device `cpu`, **24 torch threads** (torch default; inferred to be what the served app uses, since nothing in `tamu25/api` sets a thread count), Intel64 Family 6 Model 183, 32 logical CPUs, Windows 11, torch 2.15.0+cpu.
+
+| System | p50 | p95 | mean | max |
+|---|---|---|---|---|
+| Final system (hybrid) | 22.2 ms | 29.3 ms | 22.7 ms | 61.9 ms |
+| BM25 only | 7.0 ms | 10.4 ms | 7.1 ms | 13.7 ms |
+
+- One run. Phase 3 saw the same setting drift 1.75× between sessions on this laptop, so compare the two rows with each other, not with other runs. Phase 3's 26.7 / 33.6 ms was `HybridRanker.rank` at 12 threads on 46 dev queries: a different path and thread count.
+- This says nothing about Cloud Run, which will have 1 to 2 vCPUs. Unknown until deployed.
+- **Served path = scored path (confirmed).** The same script compares `Searcher.search` top 30 with the harness ranking at BM25 weight 0.10 on all 230 dev queries: identical order on 230 of 230 (`served_path_check`). So the config scored in 6.2 is the one the API returns, checked on dev queries; the locked queries were not put through this check.
+- Doc read: `docs.pytorch.org/docs/2.15/generated/torch.set_num_threads.html` ("must be called before running eager, JIT or autograd code"), which is why the script does not change the thread count mid-process.
+
+### 6.5 Human kit (M12)
+
+Command: `python scripts/human_kit.py` (**exit 0**; a second run reproduces both files byte for byte). Outputs: [human_kit.md](human_kit.md) and [human_kit_key.json](human_kit_key.json).
+
+- 10 queries drawn with `random.Random(20261113)` from the 191 test queries sorted by id; top 10 per side; each system is side A for 5 queries, in an order shuffled with `random.Random(20261114)`; the key is in the separate file.
+- A first version drew side A with one coin flip per query. Its key order was printed into the build session's log during a check, so that draw was discarded and replaced by the balanced shuffle. The queries and both lists are unchanged. The new order was checked by count only (5 and 5) and never printed.
+- Sides are **BM25 vs the final system** (owner's decision), because the spec's two sides are the same system. 0 of the 10 queries have identical lists.
+- Rubric: "which list would you buy from?", answer `A`, `B` or `same`. **Not run:** the owner runs it. Do not open the key first.
+- Titles are HTML-unescaped for display only (adjacent issue 4 in `adjacent_issues.md` is unchanged in the data).
+
+### 6.6 Cloud Run deploy and Lighthouse
+
+**Deployed by the owner on 2026-11-14**, following a step-by-step guide; the build session ran none of the deploy commands. Lighthouse was run afterwards with the owner's approval (end of this section).
+
+Service: `heb-search`, project `product-search-514708`, region `us-central1`, URL `https://heb-search-246501698420.us-central1.run.app/`.
+
+Image: the 6a image `heb-search:6a`, pushed as `us-central1-docker.pkg.dev/product-search-514708/heb-search/heb-search:6b`. No file the image copies has changed since it was built (confirmed, `git diff 6f96a35` over the Dockerfile's inputs is empty), so it serves the same code and config that 6.2 scored.
+
+Settings (confirmed, `gcloud run services describe` and `get-iam-policy`): revision `heb-search-00001-v9n`, 1 CPU, 2 GiB memory, container port 8080, concurrency 80, startup CPU boost on, ingress `all`, `roles/run.invoker` granted to `allUsers` (public, unauthenticated).
+
+**Instance cap: 1 for this revision, not for the service.** The revision annotation `autoscaling.knative.dev/maxScale` is `1` (from `--max-instances 1`). The service-level annotation `run.googleapis.com/maxScale` is `20`. The effective limit is the lesser of the two (confirmed, docs.cloud.google.com/run/docs/configuring/max-instances), so the service runs at most one instance today. The cap belongs to this revision, though; a later deploy without the flag would not carry it. The guide used the revision-level flag; the service-level flag is `--max`. **Since fixed by the owner:** a later `describe` shows `run.googleapis.com/maxScale` is `1` (confirmed), so the cap is now service-wide as the spec requires.
+
+Smoke test against the public URL (confirmed by curl, 2026-11-14):
+
+| Check | Result |
+|---|---|
+| `GET /` | 200 `text/html`, the built `index.html` |
+| `GET /search?q=gluten free pasta&k=3` | 200, 3 results, `mode: hybrid`, `split: null`, bm25, semantic and final scores present |
+| `GET /search?q=x&k=999` | 422 (cap enforced) |
+| `GET /healthz` | **404**, served by Google's front end, not by the app |
+| 5 warm `GET /search?q=organic almond milk&k=30` | server-side `latency_ms` 23.2 to 36.4; client round trip 0.09 to 0.11 s |
+
+- `/healthz` is unreachable on Cloud Run. The known-issues page says "You can't use the following URL paths: … Some paths ending with `z`" (docs.cloud.google.com/run/docs/known-issues). Inferred: `/healthz` is one of them, since the 404 body is Google's and the same image answers `/healthz` locally (section 5). The app is healthy; only the route is shadowed. Not fixed.
+- The five timings are a smoke observation on a warm instance, not a benchmark: no committed script, no saved output. Cold-start time was not measured. Memory in use on Cloud Run was not measured.
+- Docs read for the guide: docs.cloud.google.com/run/docs/deploying, docs.cloud.google.com/sdk/gcloud/reference/run/deploy, docs.cloud.google.com/artifact-registry/docs/docker/store-docker-container-images, and local `gcloud --help` for each command.
+
+**Lighthouse** (approved by the owner as "Run with npx"). Command, from the repo root:
+
+`npx --yes lighthouse https://heb-search-246501698420.us-central1.run.app/ --output json --output-path=./reports/lighthouse.json --chrome-flags="--headless" --no-enable-error-reporting --quiet`
+
+**Exit code 0.** Output: [lighthouse.json](lighthouse.json). Lighthouse 13.6.0, headless Chrome on the build laptop, default settings: mobile form factor, simulated throttling (150 ms RTT, 1.6 Mbps, 4× CPU slowdown). No run warnings, no runtime error. All values confirmed from the file.
+
+| Category | Score |
+|---|---|
+| Performance | 100 |
+| Accessibility | 100 |
+| Best practices | 96 |
+| SEO | 90 |
+| Agentic browsing | 100 |
+
+| Metric | Value |
+|---|---|
+| First Contentful Paint | 1.2 s |
+| Largest Contentful Paint | 1.2 s |
+| Total Blocking Time | 0 ms |
+| Cumulative Layout Shift | 0 |
+| Speed Index | 1.2 s |
+| Root document response | 40 ms |
+| Total transfer size | 379 KiB |
+
+- The two failed audits: `errors-in-console` (the browser's request for `/favicon.ico` gets a 404) and `meta-description` (the page has none). Neither was fixed.
+- **Scope:** one run, of the landing page only, before any search. The results list and the Debug score rows were not audited, so the accessibility score does not cover them (the Phase 5b wiring and contrast checks do).
+- The instance was warm, so this is not a cold-start measurement. A single run varies; no repeat was made.
+- "Agentic browsing" is a category in this Lighthouse version; which of its audits applied to this page was not checked.
+- Doc read: the Lighthouse readme, "Using the Node CLI" (github.com/GoogleChrome/lighthouse/blob/main/readme.md), for `--output`, `--output-path`, `--chrome-flags`, `--quiet` and `--no-enable-error-reporting`.
+
+## 7. Open items
+
+Items 1 to 5 were the pre-run list from 6a; all are settled.
+
+1. ~~Headline config~~: pinned to the API config, pre-registered (6.1).
+2. ~~Refuse-if-exists guard~~: added and tested (6.1).
+3. ~~Image labels and `held_out`~~: both kept and accepted by the owner (6.1).
+4. ~~Python test for the locked-label filter~~: added (6.1).
+5. ~~Derivability statement and bootstrap headline~~: in 6.2 and the README.
+
+Still open:
+
+6. Cloud Run cold-start time and memory in use are unmeasured (6.6). Lighthouse covered the landing page only.
+7. **Human kit not yet run** by the owner (6.5).
+8. A result title contains a literal `&nbsp;` in the UI ("White&nbsp;Cheddar Mac & Cheese"). Adjacent; not fixed.
+9. `make evaluate` default exits 0 with composite 0.0 on 191 unlabelled queries (section 2). Adjacent; not fixed.
+
+Found in 6b, listed, not fixed:
+
+10. `final_config.json` `provenance.final_system` still says "Locked-set headline comes in Phase 6" and "BM25 weight 0.10-0.15 per fold". It was not in the 6b task list.
+11. The README still describes the system as mpnet at 20/80 in the overview, architecture diagram, technology stack, Algorithm Details, Optimization Process and API examples. The final system is MiniLM at BM25 weight 0.10. Only the headline numbers were in scope.
+12. The README's four "Runtime Performance" bullets and the Scalability list remain unsourced (already in `adjacent_issues.md`); a measured table now sits above them.
+13. `reports/adjacent_issues.md` item 6 ("`--final` has never been run or tested") is now out of date.
+14. The judged-only difference on dev (tuned vs BM25) was never bootstrapped, so the dev and locked judged-only results cannot be compared interval to interval.
+15. The human kit's first side-A draw was discarded because its key reached the build log (6.5). The kit is blind to the owner, not to the session that built it.
+16. `scripts/eval_cv.py` imports `tamu25.api.search` for the pin, so the harness now depends on the API module's constants.
+17. `GET /healthz` returns Google's 404 on Cloud Run because paths ending in `z` can be reserved (6.6). The route works locally and in the container. Renaming it would touch `tamu25/api/app.py`, `tests/test_api.py` and `frontend/vite.config.ts`.
+18. ~~The one-instance cap was revision-level only~~: the owner set the service-level maximum to 1 (6.6).
+19. The frontend has no favicon (`/favicon.ico` is a 404, logged as a console error) and no meta description (6.6, Lighthouse).
