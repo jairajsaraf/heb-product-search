@@ -1,0 +1,90 @@
+{
+  "seed": 20261113,
+  "method": "random.Random(20261113): sample 10 of the test queries sorted by query_id; side A is a balanced list (each system 5 times) shuffled with random.Random(20261114)",
+  "systems": {
+    "bm25": "BM25Ranker.rank (baseline_ranker.py)",
+    "final": "Searcher.search: linear BM25 + all-MiniLM-L6-v2 at 1110a243fdf4706b3f48f1d95db1a4f5529b4d41, BM25 weight 0.1"
+  },
+  "queries": [
+    {
+      "n": 1,
+      "query_id": "s235",
+      "query": "H-E-B baby care products",
+      "A": "bm25",
+      "B": "final",
+      "identical_lists": false
+    },
+    {
+      "n": 2,
+      "query_id": "s115",
+      "query": "quick lunch salads with grapes and broccoli",
+      "A": "bm25",
+      "B": "final",
+      "identical_lists": false
+    },
+    {
+      "n": 3,
+      "query_id": "s210",
+      "query": "Texas-Size Pack baby diapers",
+      "A": "final",
+      "B": "bm25",
+      "identical_lists": false
+    },
+    {
+      "n": 4,
+      "query_id": "s347",
+      "query": "southwest marinade beef steak",
+      "A": "bm25",
+      "B": "final",
+      "identical_lists": false
+    },
+    {
+      "n": 5,
+      "query_id": "s548",
+      "query": "spooky sushi rolls",
+      "A": "bm25",
+      "B": "final",
+      "identical_lists": false
+    },
+    {
+      "n": 6,
+      "query_id": "s11",
+      "query": "H-E-B pimento cheese spread",
+      "A": "final",
+      "B": "bm25",
+      "identical_lists": false
+    },
+    {
+      "n": 7,
+      "query_id": "s425",
+      "query": "barbecue beef cuts",
+      "A": "bm25",
+      "B": "final",
+      "identical_lists": false
+    },
+    {
+      "n": 8,
+      "query_id": "s16",
+      "query": "H-E-B fragrance-free fabric softener",
+      "A": "final",
+      "B": "bm25",
+      "identical_lists": false
+    },
+    {
+      "n": 9,
+      "query_id": "s461",
+      "query": "H-E-B kosher beef ribs",
+      "A": "final",
+      "B": "bm25",
+      "identical_lists": false
+    },
+    {
+      "n": 10,
+      "query_id": "s184",
+      "query": "meat for BBQ",
+      "A": "final",
+      "B": "bm25",
+      "identical_lists": false
+    }
+  ]
+}

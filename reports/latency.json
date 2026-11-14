@@ -1,0 +1,48 @@
+{
+  "method": "Searcher.search(q, 30) per query, no HTTP layer; one untimed warm-up pass over all queries, then one timed pass with the two systems interleaved",
+  "queries": {
+    "file": "data/queries_synth_test.json",
+    "n": 191
+  },
+  "config": {
+    "model": "all-MiniLM-L6-v2",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "bm25_weight": 0.1,
+    "index": "artifacts/index.npz (scripts/build_index.py)"
+  },
+  "machine": {
+    "cpu": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "logical_cpus": 32,
+    "platform": "Windows-11-10.0.26200-SP0",
+    "device": "cpu",
+    "torch_threads": 24
+  },
+  "env": {
+    "python": "3.12.10",
+    "torch": "2.15.0+cpu",
+    "sentence-transformers": "6.3.0",
+    "numpy": "2.5.4",
+    "rank-bm25": "0.2.2"
+  },
+  "latency_ms": {
+    "final_hybrid": {
+      "p50": 22.2,
+      "p95": 29.3,
+      "mean": 22.7,
+      "max": 61.9
+    },
+    "bm25_only": {
+      "p50": 7.0,
+      "p95": 10.4,
+      "mean": 7.1,
+      "max": 13.7
+    }
+  },
+  "served_path_check": {
+    "queries": "230 dev",
+    "depth": 30,
+    "identical_order": 230,
+    "same_set_different_order": 0,
+    "min_shared_products": 30
+  }
+}
