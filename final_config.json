@@ -4,5 +4,11 @@
   "bm25_weight": 0.2,
   "semantic_weight": 0.8,
   "training_score": 0.6638,
-  "improvement_over_baseline": 0.256727
+  "improvement_over_baseline": 0.1034,
+  "provenance": {
+    "training_score": "mpnet 0.2/0.8 on all 288 train queries at depth 50, official composite. reports/baseline_repro.json (Phase 0).",
+    "improvement_over_baseline": "relative: 0.6638 / 0.6016 - 1 at depth 50 (BM25 0.6016). reports/baseline_repro.json, relative_improvement_over_bm25_same_depth.mpnet_depth50. Replaces the earlier 0.256727, which did not reproduce.",
+    "ranker_fields": "Unchanged from the original file; they describe the config the 0.6638 was measured on, not the Phase 3 final system.",
+    "final_system": "Tuned baseline: linear BM25 + all-MiniLM-L6-v2, BM25 weight 0.10-0.15 per fold, dev out-of-fold official composite 0.6759 on 230 dev queries. reports/cv_results.md. Locked-set headline comes in Phase 6."
+  }
 }
