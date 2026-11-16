@@ -305,9 +305,15 @@ ranker.rank("organic almond milk", top_k=50, bm25_weight=0.10, semantic_weight=0
 
 ## Not done
 
-- No licence file is in the repository, so no licence is granted or stated here.
 - No user-history personalisation, query expansion, ANN search or fine-tuning has been built or measured.
 - Cross-encoder reranking and RRF were measured and not kept (see "What was tried and not kept"). A cross-encoder tuned on grocery data was not tried.
+
+## Licence
+
+The code is under the MIT licence ([`LICENSE`](LICENSE)), except for the files below, which this licence does not cover:
+
+- The datathon starter kit (credited to Aidin Zadeh and Rajesh Chodavarapu), including later edits to these files: `Makefile`, `pyproject.toml`, `scripts/aggregate_leaderboard.py`, `tamu25/__init__.py`, `tamu25/api/__init__.py`, `tamu25/cli/main.py`, `tamu25/evaluate.py`, `tamu25/metrics.py`, `tamu25/validate.py`, `tests/__init__.py`, `tests/conftest.py`, `tests/test_evaluate.py`, `tests/test_validate.py` and `tests/data/`.
+- The datathon data and submissions: `data/` and `teams/`. Their terms are set by the organizers and H-E-B.
 
 ---
 
