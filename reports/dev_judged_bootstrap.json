@@ -1,0 +1,23 @@
+{
+  "source": "cv_baseline.json",
+  "source_sha256": "9d5aa996952e1ac4ddcadab7810236212436b671cbf40e125a3dbdf910351dab",
+  "n_queries": 230,
+  "resamples": 10000,
+  "seed": 20261113,
+  "judged_only": {
+    "mean_diff": 0.018149085783996925,
+    "ci95": [
+      0.006597083192959441,
+      0.030000370727899746
+    ],
+    "frac_resamples_gt0": 0.9991
+  },
+  "composite": {
+    "mean_diff": 0.07165393251192186,
+    "ci95": [
+      0.05517441695517656,
+      0.08864436416284434
+    ],
+    "frac_resamples_gt0": 1.0
+  }
+}
