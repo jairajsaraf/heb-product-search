@@ -163,7 +163,7 @@ pip install -r requirements.txt
 pip install -r requirements-api.txt
 ```
 
-The first line installs the CPU build of torch; `requirements-api.txt` adds the API stack (FastAPI, uvicorn) that the API tests and the search service need. CI (`.github/workflows/ci.yml`) runs these same three install lines. Poetry is not maintained: `pyproject.toml` does not list the ML dependencies, and the stale `poetry.lock` was removed. The `Makefile` still runs commands through `poetry run` by default; override it with `make RUN= TAMU25="python -m tamu25.cli.main" <target>` (see Command-line tools).
+The first line installs the CPU build of torch; `requirements-api.txt` adds the API stack (FastAPI, uvicorn) that the API tests and the search service need. CI (`.github/workflows/ci.yml`) runs these same three install lines. Poetry is not used: `pyproject.toml` holds only package metadata and tool settings, `requirements*.txt` are the only dependency lists, and `make install` runs the same three lines.
 
 The first run downloads `all-MiniLM-L6-v2` from Hugging Face. sentence-transformers contacts the Hub even for cached models unless you set `HF_HUB_OFFLINE=1`.
 
@@ -251,9 +251,10 @@ python -m tamu25.cli.main evaluate \
 
 Optional: `--queries_real` for `validate`, `--labels_real` for `evaluate`. `validate` checks, among other things, that each query has at least 30 results ([`tamu25/validate.py`](tamu25/validate.py)). `team-git-em` covers the 191 test queries, which have no labels here, so it validates but cannot be scored locally.
 
-Makefile targets (default prefix `poetry run`; override with `make RUN= TAMU25="python -m tamu25.cli.main" ...`):
+Makefile targets (they run `python -m tamu25.cli.main` in the current environment; `make install` first):
 
 ```bash
+make install
 make validate TEAM=team-git-em   # default goal
 make evaluate TEAM=<team>
 make info

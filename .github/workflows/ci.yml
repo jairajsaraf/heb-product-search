@@ -35,3 +35,20 @@ jobs:
           node-version: "24"
       - run: npm ci
       - run: npm test
+      - run: npm run build
+
+  image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      # Downloads all-MiniLM-L6-v2 from Hugging Face at the pinned revision (scripts/build_index.py).
+      - run: docker build --build-arg GIT_SHA=${{ github.sha }} -t heb-search .
+      - run: docker run -d --name heb -p 8080:8080 heb-search
+      - name: GET /health
+        run: |
+          body=$(curl -fsS --retry 30 --retry-delay 2 --retry-connrefused http://localhost:8080/health)
+          echo "$body"
+          test "$(echo "$body" | jq -r .status)" = ok
+          test "$(echo "$body" | jq -r .commit)" = "${{ github.sha }}"
+      - if: failure()
+        run: docker logs heb

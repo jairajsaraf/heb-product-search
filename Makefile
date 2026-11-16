@@ -6,16 +6,15 @@
 #   make evaluate TEAM=<team whose submission covers the train queries>
 #   make info
 #   make version
-# Override the tool prefix, e.g. inside a container with deps pip-installed:
-#   make RUN= TAMU25="python -m tamu25.cli.main" validate
+#   make install               # pip installs, same lines as CI
 .DEFAULT_GOAL := validate
 
 # team-git-em is the only real submission; it covers the 191 test queries,
 # so validate uses the test queries and evaluate cannot score it locally (no test labels).
 TEAM ?= team-git-em
 OUT_DIR ?= .
-RUN ?= poetry run
-TAMU25 ?= $(RUN) tamu25
+RUN ?=
+TAMU25 ?= $(RUN) python -m tamu25.cli.main
 SUBMISSION = teams/$(TEAM)/submission.json
 PRODUCTS   = data/products.json
 QSYNTH     ?= data/queries_synth_test.json
@@ -23,16 +22,17 @@ LSYNTH     = data/labels_synth_train.json
 .PHONY: install validate evaluate all clean info version lint unittest
 
 lint: ## Lint and reformat the code
-	@$(RUN) autoflake tamu25 tests scripts --remove-all-unused-imports --recursive --remove-unused-variables --in-place --exclude=__init__.py
-	@$(RUN) black tamu25 tests scripts --line-length 120 -q
-	@$(RUN) isort tamu25 tests scripts -q
+	@$(RUN) python -m autoflake tamu25 tests scripts --remove-all-unused-imports --recursive --remove-unused-variables --in-place --exclude=__init__.py
+	@$(RUN) python -m black tamu25 tests scripts --line-length 120 -q
+	@$(RUN) python -m isort tamu25 tests scripts -q
 
 unittest: ## Run unit-tests
-	@$(RUN) pytest -s -v tests
+	@$(RUN) python -m pytest -s -v tests
 
 install:
-	@pip install poetry
-	@poetry install
+	pip install torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu
+	pip install -r requirements.txt
+	pip install -r requirements-api.txt
 
 validate:
 	$(TAMU25) validate \
