@@ -3,6 +3,7 @@ import { motion } from "motion/react"
 import { useContext, type CSSProperties } from "react"
 import { decodeEntities, fact, fixed, MotionContext, percent, REPO, signed, sourceUrl } from "../utils"
 import { GlowingEffect } from "./glowing-effect"
+import { Pipeline } from "./pipeline"
 import { RollingNumber } from "./rolling-number"
 import type { Row } from "./shelves"
 
@@ -18,26 +19,6 @@ function Source({ path }: { path: string }) {
 function CardGlow() {
   const moving = useContext(MotionContext)
   return moving ? <GlowingEffect disabled={false} spread={40} proximity={64} inactiveZone={0.01} borderWidth={2} /> : null
-}
-
-export const STEPS = [
-  "Split the query into words",
-  "Score word overlap with each product (BM25)",
-  "Turn the query into an embedding (MiniLM)",
-  "Compare it with every product embedding",
-  "Blend the two scores and sort",
-]
-
-export function Pipeline({ running = false }: { running?: boolean }) {
-  return (
-    <ol className="pipeline" data-running={running || undefined}>
-      {STEPS.map((step, index) => (
-        <li key={step} style={{ "--i": index } as CSSProperties}>
-          {step}
-        </li>
-      ))}
-    </ol>
-  )
 }
 
 export function HowItScores({ row, weight }: { row: Row; weight: number }) {

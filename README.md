@@ -195,7 +195,19 @@ npm test         # vitest
 npm run build    # tsc -b && vite build, into frontend/dist
 ```
 
-The page shows the ranked list, the dev label where one exists, and (Debug switch, on by default) the final, BM25 and semantic scores per result. It registers a read-only `search_products` tool through `@ui-sdk/react` agent support ([`frontend/src/agent.ts`](frontend/src/agent.ts)). A screenshot is in [`reports/frontend_screenshot.jpg`](reports/frontend_screenshot.jpg), and a Lighthouse run of the landing page in [`reports/lighthouse.json`](reports/lighthouse.json).
+**What a visitor sees before any query.** A headline, what the project is (a datathon project, not H-E-B's production search, no language model, nothing trained), what was measured (on 58 held-back queries the official score rose from 0.6273 to 0.6998, and counting only graded products the gain cannot be told apart from zero), and what was built. Below that is a search box, five example chips and a worked example already on screen, computed when the page was built, so loading it sends no request. Until the visitor touches anything it steps through the five examples.
+
+**Shelves.** Two ranked top-10 lists sit side by side: "Keyword only" (BM25, the baseline) and "Keyword + meaning" (0.10 × keyword + 0.90 × meaning, which is what the server uses). The right-hand list starts in keyword order and then re-ranks, and each of its rows says where keyword search had it. Rows can show keyword and meaning score bars and the datathon grade where one exists. A live search runs both rankings, so it makes two requests: `GET /search?q=...` and the same with `mode=bm25`. Grades appear only for development queries. For a held-out query the page shows none, and the API does not send them.
+
+**Below the first screen** (loaded in a separate chunk after first paint): how one score is made; the evidence (three confidence intervals on one axis, plus cards for the official score, graded products only, the share of ungraded products in the top 10, and the human comparison, which has not been run); where it fails (two worked failures, each with a button that loads it into the shelves); what was tried and not kept (reciprocal rank fusion and cross-encoder reranking); and the limits. Every figure comes from [`frontend/src/evidence.json`](frontend/src/evidence.json) and [`frontend/src/examples.json`](frontend/src/examples.json), which `frontend/scripts/build_data.py` generates from the reports; `frontend/checks/evidence.test.ts` fails if either file drifts from its source.
+
+**Motion switch.** The page uses several effects (grid and border beams, typewriter title, rolling numbers, glow on cards, a scroll-tracing beam, a loader for slow searches). The Motion switch turns all of them off, and it starts off for visitors whose system asks for reduced motion. With it off, every element shows its final state at once and the example autoplay stops. The "Show score breakdown" switch hides the per-row score lines.
+
+**API additions the page relies on.** `GET /search` takes an optional `mode`, either `hybrid` or `bm25`. `bm25` ranks by the keyword score alone, so every `semantic_score` is null; any other value returns 422, and leaving it out uses the server's default mode. The server gzips responses of 1,000 bytes or more, and serves `.woff2` fonts uncompressed. The page treats an answer whose `mode` is not `bm25` as a server that ignores the parameter and never shows it as the keyword-only list.
+
+The live Cloud Run service has not been redeployed with these changes. It still runs the older page and API, so none of the above applies to it until the next deploy.
+
+The page also registers a read-only `search_products` tool through `@ui-sdk/react` agent support ([`frontend/src/agent.ts`](frontend/src/agent.ts)). A screenshot is in [`reports/frontend_screenshot.jpg`](reports/frontend_screenshot.jpg), and a Lighthouse run of the landing page in [`reports/lighthouse.json`](reports/lighthouse.json) (that file is from the older page; current local runs are in [`reports/frontend_verification.md`](reports/frontend_verification.md) section 4).
 
 ### Container
 

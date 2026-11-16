@@ -4,16 +4,18 @@ import { Input } from "@ui-sdk/react/input"
 import { Switch, SwitchThumb } from "@ui-sdk/react/switch"
 import { BorderBeam } from "border-beam"
 import { MotionConfig } from "motion/react"
-import { useEffect, useRef, useState, type FormEvent } from "react"
+import { lazy, Suspense, useEffect, useRef, useState, type FormEvent } from "react"
 import { search, type Result, type SearchResponse } from "./api"
 import { GridBeam } from "./components/grid-beam"
 import { MultiStepLoader } from "./components/multi-step-loader"
-import { Evidence, Failures, HowItScores, Limits, Pipeline, STEPS, Tried } from "./components/sections"
+import { Pipeline, STEPS } from "./components/pipeline"
 import { Shelf, type Row } from "./components/shelves"
-import { TracingBeam } from "./components/tracing-beam"
 import { Typewriter } from "./components/typewriter"
 import snapshot from "./examples.json"
 import { fact, fixed, MotionContext, signed } from "./utils"
+
+// Below-the-fold sections load after first paint. The wrapper reserves their height so nothing shifts.
+const Lower = lazy(() => import("./components/lower"))
 
 const WEIGHT = snapshot.bm25_weight
 const EXAMPLES = snapshot.examples
@@ -160,15 +162,6 @@ export function App() {
   }
 
   const official = fact("holdout.official.diff").value
-  const lower = (
-    <>
-      <HowItScores row={EXAMPLES[0]!.hybrid[0]!} weight={WEIGHT} />
-      <Evidence />
-      <Failures examples={EXAMPLES} onShow={showById} />
-      <Tried />
-      <Limits />
-    </>
-  )
   const nextExample = EXAMPLES[(exampleIndex + 1) % EXAMPLES.length]!
 
   return (
@@ -327,7 +320,9 @@ export function App() {
           </GridBeam>
 
           <div className="wrap">
-            {motionOn ? <TracingBeam className="max-w-none">{lower}</TracingBeam> : lower}
+            <Suspense fallback={<div style={{ minHeight: "100vh" }} />}>
+              <Lower onShow={showById} />
+            </Suspense>
           </div>
         </main>
       </MotionConfig>

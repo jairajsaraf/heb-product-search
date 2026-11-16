@@ -204,6 +204,7 @@
   }
 
   .stage {
+    position: relative; /* the slow-search loader fills this panel */
     container-type: inline-size;
     padding: clamp(1rem, 2.5vw, 1.5rem);
     border: 1px solid var(--hair);

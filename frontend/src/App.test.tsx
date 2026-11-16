@@ -216,6 +216,24 @@ test("a slow search shows Searching… then the pipeline strip, and both go away
   expect(shelf("Keyword + meaning").getAllByRole("listitem")).toHaveLength(2)
 })
 
+test("with Motion on, the slow-search loader renders inside the results panel, not over the page", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () => {
+      await new Promise((r) => setTimeout(r, 600))
+      return new Response(JSON.stringify(response()))
+    })
+  )
+  render(<App />)
+  const user = userEvent.setup()
+  await user.click(screen.getByRole("switch", { name: "Motion" }))
+  await user.type(box(), "pasta{Enter}")
+  await waitFor(() => expect(document.querySelector(".stage [aria-hidden='true'].absolute.inset-0")).not.toBeNull())
+  expect(document.querySelector(".fixed.inset-0")).toBeNull()
+  expect(document.querySelector(".stage .pipeline")).toBeNull()
+  await waitFor(() => expect(status()).toBe(DEV_STATUS))
+})
+
 test("a keyword list where nothing matched says so instead of listing arbitrary products", async () => {
   const body = response({ results: response().results.map((r) => ({ ...r, bm25_score: 0 })) })
   stubFetch(body)
