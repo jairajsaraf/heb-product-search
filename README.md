@@ -205,9 +205,9 @@ npm run build    # tsc -b && vite build, into frontend/dist
 
 **API additions the page relies on.** `GET /search` takes an optional `mode`, either `hybrid` or `bm25`. `bm25` ranks by the keyword score alone, so every `semantic_score` is null; any other value returns 422, and leaving it out uses the server's default mode. The server gzips responses of 1,000 bytes or more, and serves `.woff2` fonts uncompressed. The page treats an answer whose `mode` is not `bm25` as a server that ignores the parameter and never shows it as the keyword-only list.
 
-The live Cloud Run service has not been redeployed with these changes. It still runs the older page and API, so none of the above applies to it until the next deploy.
+The live Cloud Run service runs this page and API since 2026-11-16 (revision `heb-search-00003-5vj`; see [`reports/verification.md`](reports/verification.md) section 6.6).
 
-The page also registers a read-only `search_products` tool through `@ui-sdk/react` agent support ([`frontend/src/agent.ts`](frontend/src/agent.ts)). A screenshot is in [`reports/frontend_screenshot.jpg`](reports/frontend_screenshot.jpg), and a Lighthouse run of the landing page in [`reports/lighthouse.json`](reports/lighthouse.json) (that file is from the older page; current local runs are in [`reports/frontend_verification.md`](reports/frontend_verification.md) section 4).
+The page also registers a read-only `search_products` tool through `@ui-sdk/react` agent support ([`frontend/src/agent.ts`](frontend/src/agent.ts)). A screenshot is in [`reports/frontend_screenshot.jpg`](reports/frontend_screenshot.jpg), and a Lighthouse run of the landing page in [`reports/lighthouse.json`](reports/lighthouse.json) (that file is from the older page; runs of the current page, local and live, are in [`reports/frontend_verification.md`](reports/frontend_verification.md) sections 4.1 and 4.2).
 
 ### Container
 

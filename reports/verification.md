@@ -305,6 +305,22 @@ Smoke test against the public URL (confirmed by curl, 2026-11-14):
 
 Live check after the deploy (confirmed by curl and `gcloud run services describe`): `GET /health` 200 `{"status":"ok","mode":"hybrid"}`; `GET /search?q=gluten free pasta&k=3` 200; `k=999` 422; `GET /` 200. Settings unchanged: 1 CPU, 2 GiB, revision and service maximum both 1 instance, public access. `/healthz` still returns Google's 404, as expected. The frontend unit tests were not run locally (no `node_modules` in this worktree); the image build compiled the frontend.
 
+**Landing page redeploy (2026-11-16, after PR 13; requested by the owner).** The rebuilt landing page (PRs 12 and 13, `main` at `55a07b8`) was built into a new image and deployed. All values were measured and are confirmed.
+
+| Step | Command | Exit | Result |
+|---|---|---|---|
+| Tests | `python -m pytest tests -q` | 0 | 22 passed, at `55a07b8` |
+| Build | `docker build -t heb-search:6d .` | 0 | 2.25 GB |
+| Local smoke | `docker run -p 8081:8080 heb-search:6d`, curl | n/a | `/health` 200 `{"status":"ok","mode":"hybrid"}`; `/` title "Hybrid product search: keyword + meaning"; `mode=bm25` returns `"mode":"bm25"`; `k=999` 422; JS `content-encoding: gzip` on GET; font `content-type: font/woff2`; `/favicon.svg` 200 |
+| Push | `docker push us-central1-docker.pkg.dev/product-search-514708/heb-search/heb-search:6d` | 0 | digest `sha256:4d2766c8…` |
+| Deploy | same `gcloud run deploy` command as the 6c row, with `:6d` and `--quiet` | 0 | revision `heb-search-00003-5vj`, 100% of traffic |
+
+Live check after the deploy (confirmed by curl and `gcloud run services describe`) against `https://heb-search-246501698420.us-central1.run.app/`: same results as the local smoke test. The revision and service maximum are both 1 instance, with 1 CPU and 2 GiB.
+
+- The first gzip check printed nothing because `curl -I` sends HEAD, which Starlette's `GZipMiddleware` does not compress. A GET showed `content-encoding: gzip`.
+- The old local images `heb-search:6a`, `6c` and `landing-check` were removed afterwards. Only `6d` is kept.
+- The Lighthouse runs above (the 1.0 table) describe the old page. For the new page, see `frontend_verification.md` section 4.2.
+
 ## 7. Open items
 
 Items 1 to 5 were the pre-run list from 6a; all are settled.
