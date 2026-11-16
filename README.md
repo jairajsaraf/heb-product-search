@@ -95,6 +95,9 @@ composite = 0.30 × nDCG@10 + 0.30 × AP@20 + 0.25 × R@30 + 0.15 × P@10
 
 Relevance is graded 0 to 3. Products without a label for the query count as relevance 0. "Judged-only" removes unlabelled products from the depth-30 list before scoring, without refilling.
 
+- nDCG@10's ideal ranking is built from the returned list, not from all labels ([`tamu25/metrics.py`](tamu25/metrics.py), `ndcg_at_k`), so nDCG depends on list depth. The same BM25 ranking scores 0.7217 at depth 30 and 0.6975 at depth 50 (`reports/baseline_repro.json`, `bm25_depth30` / `bm25_depth50`, `nDCG@10`). It is the datathon's metric, so comparisons inside this repo are like for like, but it is not standard nDCG.
+- On the 230 dev queries the judged-only gain is +0.0181 [+0.0066, +0.0300] (99.91% of resamples above 0; [`reports/dev_judged_bootstrap.json`](reports/dev_judged_bootstrap.json), from [`scripts/dev_judged_bootstrap.py`](scripts/dev_judged_bootstrap.py)). On the 58 locked queries it is +0.0063 [−0.0143, +0.0271] and cannot be told apart from zero.
+
 ### Evaluation harness
 
 [`scripts/eval_cv.py`](scripts/eval_cv.py) is the only place the final system is scored:
@@ -102,6 +105,8 @@ Relevance is graded 0 to 3. Products without a label for the query count as rele
 - **Split.** [`data/split_v1.json`](data/split_v1.json) puts 58 of the 288 training queries in a locked set and the other 230 in five dev folds (seed 20261113).
 - **Tuning.** Per fold, the model (MiniLM or mpnet) and BM25 weight (0 to 1 in steps of 0.05) are chosen on the four other folds and scored on the held-out fold. Output: [`reports/cv_baseline.json`](reports/cv_baseline.json).
 - **Locked set.** `--final` scores BM25 and the config pinned in `search.py` on the 58 locked queries, and refuses to run if `reports/holdout_final.json` already exists. It has been run once; do not run it again.
+
+The `sha256` values recorded in the reports' `meta` were computed on a Windows CRLF checkout. `tests/test_recorded_hashes.py` recomputes them from the committed files, and `.gitattributes` now checks JSON out with LF on every platform.
 
 ---
 
@@ -157,7 +162,7 @@ pip install -r requirements.txt
 pip install -r requirements-api.txt
 ```
 
-The first line installs the CPU build of torch; `requirements-api.txt` adds the API stack (FastAPI, uvicorn) that the API tests and the search service need. CI (`.github/workflows/ci.yml`) runs these same three install lines. Poetry (`pyproject.toml`, `poetry.lock`) is also supported, but `poetry.lock` is stale ([`reports/adjacent_issues.md`](reports/adjacent_issues.md)); the `Makefile` runs commands through `poetry run` by default.
+The first line installs the CPU build of torch; `requirements-api.txt` adds the API stack (FastAPI, uvicorn) that the API tests and the search service need. CI (`.github/workflows/ci.yml`) runs these same three install lines. Poetry is not maintained: `pyproject.toml` does not list the ML dependencies, and the stale `poetry.lock` was removed. The `Makefile` still runs commands through `poetry run` by default; override it with `make RUN= TAMU25="python -m tamu25.cli.main" <target>` (see Command-line tools).
 
 The first run downloads `all-MiniLM-L6-v2` from Hugging Face. sentence-transformers contacts the Hub even for cached models unless you set `HF_HUB_OFFLINE=1`.
 
