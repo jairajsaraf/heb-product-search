@@ -4,17 +4,21 @@ Run:  uvicorn tamu25.api.app:app   (from the repo root; env HEB_DATA_DIR, HEB_IN
 Startup loads products and the precomputed index (scripts/build_index.py) once, plus the query encoder.
 """
 import json
+import mimetypes
 import os
 import time
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Literal
 
 import numpy as np
 from fastapi import FastAPI, Query
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from tamu25.api.search import MODEL_NAME, MODEL_REVISION, Searcher
+
+mimetypes.add_type("font/woff2", ".woff2")  # Python does not know .woff2: the font went out as octet-stream and was gzipped
 
 MAX_QUERY_CHARS = 200
 MAX_K = 30
@@ -41,6 +45,8 @@ def create_app(searcher=None, frontend_dir=None):
         yield
 
     app = FastAPI(title="HEB product search", lifespan=lifespan)
+    # Level 6, not the default 9: one CPU, and static files are compressed on every request.
+    app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=6)
 
     @app.get("/health")
     def health():
@@ -50,9 +56,10 @@ def create_app(searcher=None, frontend_dir=None):
     def search(
         q: Annotated[str, Query(min_length=1, max_length=MAX_QUERY_CHARS)],
         k: Annotated[int, Query(ge=1, le=MAX_K)] = MAX_K,
+        mode: Annotated[Literal["hybrid", "bm25"] | None, Query()] = None,
     ):
         t0 = time.perf_counter()
-        out = app.state.searcher.search(q, k)
+        out = app.state.searcher.search(q, k, mode)
         out["latency_ms"] = round((time.perf_counter() - t0) * 1000, 1)
         return out
 
