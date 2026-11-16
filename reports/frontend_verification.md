@@ -1,6 +1,6 @@
 # Landing page rebuild: verification
 
-Written 2026-11-15. Branch `feat/landing-page`, cut from `main` at `29b52ee`. Nothing is committed, pushed or deployed, so the live site still shows the old page.
+Written 2026-11-15. Branch `feat/landing-page`, cut from `main` at `29b52ee`. When this was written nothing was committed, pushed or deployed. The page was later merged (PRs 12 and 13) and redeployed to Cloud Run on 2026-11-16 UTC; see section 4.2.
 
 Plan: `docs/plans/2026-11-14-landing-page-rebuild.md`. Each claim below is marked **confirmed** (with the command or observation), **inferred**, or **unknown**.
 
@@ -117,7 +117,28 @@ Reading these numbers:
 - The earlier 0.95 in this section was one run (two, in the gzip rerun), taken before the font fix. On this machine a 5-run baseline median is 0.93, not 0.95, and the baseline runs span 0.92 to 0.95. The 0.95 was the top of that spread, not a typical run.
 - After code-splitting the median is 0.95 and the five runs span 0.95 to 0.96. The gain is about 0.02 (**confirmed** as a difference between medians; **inferred** to come from the smaller entry chunk, since nothing else differed between the two builds that I know of, and I did not test any other cause). The ranges touch at 0.95, so this is a small effect.
 - The entry chunk shrank about 4%, because most of the bundle is not below the fold. The score is still below the old page's 1.0.
-- All of this is a local build on one machine. The deployed service has not been measured since these changes; it still runs the old page.
+- All of this is a local build on one machine. The deployed service was measured after the redeploy; see 4.2.
+
+### 4.2 Live Cloud Run, after the redeploy (2026-11-16 UTC)
+
+**Confirmed from the 5 JSON files** in the session scratch folder outside the repo. Same Lighthouse command as above, against the live URL `https://heb-search-246501698420.us-central1.run.app/`. Lighthouse 13.6.0, mobile, simulated throttling. All 5 runs exited 0.
+
+| Metric | Median of 5 |
+|---|---|
+| Performance | 0.96 (runs 0.96, 0.97, 0.96, 0.97, 0.94) |
+| Accessibility | 1.0 |
+| Best practices | 1.0 |
+| SEO | 1.0 |
+| First contentful paint = largest contentful paint | 2,033 ms |
+| Total blocking time | 125 ms (124.5) |
+| Cumulative layout shift | 0 |
+
+Reading these numbers:
+
+- The live median (0.96) is a little above the local after-splitting median in 4.1 (0.95). **Inferred:** different host and network path. Not investigated.
+- The old deployed page in `reports/lighthouse.json` scored performance 1.0 with LCP 1.2 s, from one run of a much smaller page. That is not a like-for-like comparison.
+- Best practices rose from 0.96 to 1.0 and SEO from 0.9 to 1.0 against that old live run. **Confirmed** by comparing the two sets of numbers.
+- The instance was warm, so this is not a cold-start measurement.
 
 ## 5. Failure states
 
