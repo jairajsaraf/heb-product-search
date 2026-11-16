@@ -1,5 +1,5 @@
 // From Aceternity UI: https://ui.aceternity.com/components/multi-step-loader . Used under the Aceternity licence: https://ui.aceternity.com/licence
-// Changed: import path; "use client" removed; colours use the page CSS variables; overlay is aria-hidden and pointer-events-none.
+// Changed: import path; "use client" removed; colours use the page CSS variables; overlay is aria-hidden and pointer-events-none; overlay is absolute inside its nearest positioned parent (the results panel) instead of fixed over the whole page, so it needs a `relative` parent.
 import { cn } from "../utils";
 import { AnimatePresence, motion } from "motion/react";
 import { useState, useEffect } from "react";
@@ -134,7 +134,7 @@ export const MultiStepLoader = ({
             opacity: 0,
           }}
           aria-hidden="true"
-          className="pointer-events-none w-full h-full fixed inset-0 z-[100] flex items-center justify-center backdrop-blur-2xl"
+          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center overflow-hidden rounded-[inherit] backdrop-blur-2xl"
         >
           <div className="h-96  relative">
             <LoaderCore value={currentState} loadingStates={loadingStates} />

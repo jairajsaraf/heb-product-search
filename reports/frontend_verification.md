@@ -85,6 +85,40 @@ Performance went from 0.69 to 0.95 and first contentful paint from 4.9 s to 2.2 
 
 **SEO rose to 1.0 (confirmed):** the page now has a meta description.
 
+### 4.1 Rerun after the font fix, favicon and code-splitting (2026-11-16 UTC)
+
+**Confirmed from the Lighthouse JSON files** (session scratch folder outside the repo; not committed). Same command as above, Lighthouse 13.6.0, mobile, simulated throttling, against my own `uvicorn` on port 8010, 5 runs per set. Medians computed by me from the JSON (`categories.*.score`, and `numericValue` of the first-contentful-paint, largest-contentful-paint, total-blocking-time and cumulative-layout-shift audits).
+
+These runs are after the `.woff2` fix (font served as `font/woff2`, 90,104 bytes, no gzip) and with the favicon in place, so the 0.96 best-practices score above no longer applies: the console-errors audit is empty in the runs I opened (first and fifth of each set).
+
+The "before" build is the tree with the favicon and font fix and no code-splitting. It was run as two sets of 5 (`base`, `base2`; same JS file name in both, so the same build) to see the spread. The "after" build lazy-loads the below-the-fold sections through `frontend/src/components/lower.tsx`.
+
+| Metric (median of 5) | Before, set 1 | Before, set 2 | After code-splitting |
+|---|---|---|---|
+| Performance | 0.93 | 0.93 | 0.95 |
+| Best practices | 1.00 | 1.00 | 1.00 |
+| First contentful paint | 2,248 ms | 2,237 ms | 2,146 ms |
+| Largest contentful paint | 2,248 ms | 2,237 ms | 2,146 ms |
+| Total blocking time | 210 ms | 204 ms | 139 ms |
+| Cumulative layout shift | 0 | 0 | 0 |
+
+Individual performance scores: before set 1 0.93, 0.93, 0.92, 0.93, 0.92; before set 2 0.95, 0.92, 0.93, 0.93, 0.92; after 0.95, 0.96, 0.95, 0.96, 0.95. First and largest contentful paint were the same value in every run. Total blocking time ranged 146 to 237 ms before and 100 to 157 ms after.
+
+Initial JS chunk, from the Vite build output, and transfer size from the `network-requests` audit:
+
+| Build | JS (raw / gzip, Vite) | Transfer in Lighthouse (bytes) |
+|---|---|---|
+| Before | 653.98 kB / 196.56 kB | 195,128 |
+| After, entry chunk | 627.63 kB / 188.40 kB | 187,187 |
+| After, `lower` chunk (loaded after first paint) | 27.24 kB / 9.83 kB | 10,081 |
+
+Reading these numbers:
+
+- The earlier 0.95 in this section was one run (two, in the gzip rerun), taken before the font fix. On this machine a 5-run baseline median is 0.93, not 0.95, and the baseline runs span 0.92 to 0.95. The 0.95 was the top of that spread, not a typical run.
+- After code-splitting the median is 0.95 and the five runs span 0.95 to 0.96. The gain is about 0.02 (**confirmed** as a difference between medians; **inferred** to come from the smaller entry chunk, since nothing else differed between the two builds that I know of, and I did not test any other cause). The ranges touch at 0.95, so this is a small effect.
+- The entry chunk shrank about 4%, because most of the bundle is not below the fold. The score is still below the old page's 1.0.
+- All of this is a local build on one machine. The deployed service has not been measured since these changes; it still runs the old page.
+
 ## 5. Failure states
 
 Checked by a subagent on 2026-11-14, then its diff read and its tests rerun. All **confirmed** unless noted.
