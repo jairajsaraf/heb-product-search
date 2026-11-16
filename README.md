@@ -152,10 +152,12 @@ Python 3.11+ (`pyproject.toml`; the container uses 3.12).
 ```bash
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu
 pip install -r requirements.txt
+pip install -r requirements-api.txt
 ```
 
-`requirements.txt` pins `torch==2.15.0` with a note to install the CPU build from `https://download.pytorch.org/whl/cpu`. Poetry (`pyproject.toml`, `poetry.lock`) is also supported, but `poetry.lock` is stale ([`reports/adjacent_issues.md`](reports/adjacent_issues.md)); the `Makefile` runs commands through `poetry run` by default.
+The first line installs the CPU build of torch; `requirements-api.txt` adds the API stack (FastAPI, uvicorn) that the API tests and the search service need. CI (`.github/workflows/ci.yml`) runs these same three install lines. Poetry (`pyproject.toml`, `poetry.lock`) is also supported, but `poetry.lock` is stale ([`reports/adjacent_issues.md`](reports/adjacent_issues.md)); the `Makefile` runs commands through `poetry run` by default.
 
 The first run downloads `all-MiniLM-L6-v2` from Hugging Face. sentence-transformers contacts the Hub even for cached models unless you set `HF_HUB_OFFLINE=1`.
 
