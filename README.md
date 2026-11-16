@@ -219,11 +219,11 @@ The page also registers a read-only `search_products` tool through `@ui-sdk/reac
 ### Container
 
 ```bash
-docker build -t heb-search .
+docker build --build-arg GIT_SHA=$(git rev-parse HEAD) -t heb-search .
 docker run -p 8080:8080 heb-search
 ```
 
-The build downloads MiniLM and computes the index inside the image, sets `HF_HUB_OFFLINE=1`, and serves the API and the built frontend on one origin. The server listens on `$PORT`, which Cloud Run sets, and on 8080 if unset. Build, smoke-test and deploy records: [`reports/verification.md`](reports/verification.md) sections 5 and 6.6. The image also contains all 288 labels and `split_v1.json`; the repository is public, so the owner accepted this ([`reports/holdout_prereg.md`](reports/holdout_prereg.md), decision 3).
+The build downloads MiniLM and computes the index inside the image, sets `HF_HUB_OFFLINE=1`, and serves the API and the built frontend on one origin. `/health` also returns `commit`, taken from the `GIT_SHA` build argument (`docker build --build-arg GIT_SHA=$(git rev-parse HEAD) ...`), and `unknown` when it is not passed; the live service was built before this change, so its `/health` does not report a commit until the next redeploy. The server listens on `$PORT`, which Cloud Run sets, and on 8080 if unset. Build, smoke-test and deploy records: [`reports/verification.md`](reports/verification.md) sections 5 and 6.6. The image also contains all 288 labels and `split_v1.json`; the repository is public, so the owner accepted this ([`reports/holdout_prereg.md`](reports/holdout_prereg.md), decision 3).
 
 Deployed on Google Cloud Run (`us-central1`, 1 CPU, 2 GiB, at most one instance, public and unauthenticated; [`reports/verification.md`](reports/verification.md) 6.6). The health route is `/health` because `/healthz` returned Google's own 404 on Cloud Run; the cause is inferred from Cloud Run's known-issues page, which reserves some paths ending in `z`.
 
