@@ -17,9 +17,16 @@ def client(repo_root):
         yield c, products
 
 
-def test_health(client):
+def test_health(client, monkeypatch):
     c, _ = client
-    assert c.get("/health").json() == {"status": "ok", "mode": "bm25"}
+    monkeypatch.setenv("GIT_SHA", "abc123")
+    assert c.get("/health").json() == {"status": "ok", "mode": "bm25", "commit": "abc123"}
+
+
+def test_health_commit_defaults_to_unknown(client, monkeypatch):
+    c, _ = client
+    monkeypatch.delenv("GIT_SHA", raising=False)
+    assert c.get("/health").json()["commit"] == "unknown"
 
 
 def test_frontend_is_served_same_origin_and_api_routes_win(repo_root, tmp_path):
@@ -27,7 +34,7 @@ def test_frontend_is_served_same_origin_and_api_routes_win(repo_root, tmp_path):
     products = json.loads((repo_root / "tests" / "data" / "products.json").read_text(encoding="utf-8"))
     with fastapi_testclient.TestClient(create_app(Searcher(products), frontend_dir=tmp_path)) as c:
         assert "Search products" in c.get("/").text
-        assert c.get("/health").json() == {"status": "ok", "mode": "bm25"}
+        assert {k: v for k, v in c.get("/health").json().items() if k != "commit"} == {"status": "ok", "mode": "bm25"}
         assert c.get("/search", params={"q": products[0]["title"].split()[0]}).json()["mode"] == "bm25"
     with fastapi_testclient.TestClient(create_app(Searcher(products), frontend_dir=tmp_path / "missing")) as c:
         assert c.get("/").status_code == 404 and c.get("/health").status_code == 200

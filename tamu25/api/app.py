@@ -1,6 +1,6 @@
 """FastAPI app: GET /search, GET /health.
 
-Run:  uvicorn tamu25.api.app:app   (from the repo root; env HEB_DATA_DIR, HEB_INDEX, HEB_FRONTEND_DIR)
+Run:  uvicorn tamu25.api.app:app   (from the repo root; env HEB_DATA_DIR, HEB_INDEX, HEB_FRONTEND_DIR, GIT_SHA)
 Startup loads products and the precomputed index (scripts/build_index.py) once, plus the query encoder.
 """
 import json
@@ -50,7 +50,7 @@ def create_app(searcher=None, frontend_dir=None):
 
     @app.get("/health")
     def health():
-        return {"status": "ok", "mode": app.state.searcher.mode}
+        return {"status": "ok", "mode": app.state.searcher.mode, "commit": os.environ.get("GIT_SHA", "unknown")}
 
     @app.get("/search")
     def search(

@@ -23,6 +23,9 @@ COPY data/products.json data/queries_synth_train.json data/labels_synth_train.js
 
 # Bake the model and the product index into the image; the running container then needs no network.
 RUN python scripts/build_index.py
+# The commit this image was built from, returned by /health: docker build --build-arg GIT_SHA=$(git rev-parse HEAD) ...
+ARG GIT_SHA
+ENV GIT_SHA=${GIT_SHA:-unknown}
 ENV HF_HUB_OFFLINE=1 HEB_DATA_DIR=data HEB_INDEX=artifacts/index.npz
 
 # Cloud Run supplies $PORT; 8080 locally.
