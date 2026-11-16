@@ -23,8 +23,20 @@ export function response(over: Partial<SearchResponse> = {}): SearchResponse {
   }
 }
 
+/** The keyword-only answer the server gives for `mode=bm25`: same products, no meaning score. */
+export function keywordOnly(body: SearchResponse): SearchResponse {
+  return {
+    ...body,
+    mode: "bm25",
+    results: body.results.map((r) => ({ ...r, score: r.bm25_score, semantic_score: null })),
+  }
+}
+
 export function stubFetch(body: unknown, status = 200) {
-  const fn = vi.fn(async () => new Response(JSON.stringify(body), { status }))
+  const fn = vi.fn(async (url: string) => {
+    const keyword = status === 200 && String(url).includes("mode=bm25")
+    return new Response(JSON.stringify(keyword ? keywordOnly(body as SearchResponse) : body), { status })
+  })
   vi.stubGlobal("fetch", fn)
   return fn
 }

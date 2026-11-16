@@ -57,11 +57,13 @@ class Searcher:
     def mode(self):
         return "hybrid" if self.encoder is not None and self._unit is not None else "bm25"
 
-    def search(self, query, k=30):
+    def search(self, query, k=30, mode=None):
+        """mode="bm25" ranks by the keyword score alone (no encoder call); anything else uses self.mode."""
+        mode = "bm25" if mode == "bm25" else self.mode
         raw = np.asarray(self.bm25.bm25.get_scores(preprocess_text(query)), dtype=float)
         mx = raw.max()
         bm25 = raw / mx if mx > 0 else raw
-        if self.mode == "hybrid":
+        if mode == "hybrid":
             q = self.encoder.encode([query], convert_to_numpy=True)[0]
             sem = (self._unit @ (q / np.linalg.norm(q)) + 1) / 2
             final = self.bm25_weight * bm25 + (1 - self.bm25_weight) * sem
@@ -86,4 +88,4 @@ class Searcher:
                 # judged label for dev queries (0 = unjudged or irrelevant); None for anything else, see `split`
                 "label": labels.get(p["product_id"], 0) if qid else None,
             })
-        return {"query": query, "split": split, "mode": self.mode, "results": results}
+        return {"query": query, "split": split, "mode": mode, "results": results}

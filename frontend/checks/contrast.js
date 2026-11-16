@@ -1,8 +1,9 @@
 // Colour-contrast check for a real browser. Paste into the console (or the browser tool) on the running app.
-// Reads the colours that are painted (computed styles, alpha composited over the real backdrop), not the tokens.
-// Text needs 4.5:1 (WCAG 1.4.3); control edges, switch fills and focus rings need 3:1 (WCAG 1.4.11).
-// Run once per colour scheme, after a search so results exist: contrastCheck(). For focus rings, press Tab to a
-// control with a real key, then call contrastFocus().
+// Reads the colours that are painted (computed styles, alpha and opacity composited over the real backdrop), not
+// the tokens. Every element that directly holds text needs 4.5:1, or 3:1 when large (WCAG 1.4.3); placeholders
+// count as text; control edges need 3:1 (WCAG 1.4.11). Canvas and gradient backdrops are not read: check those by eye.
+// Switch "Motion" off on the page first: a row that is still fading in reads as failing. Then run once per
+// colour scheme: contrastCheck(). For focus rings, press Tab to a control with a real key, then call contrastFocus().
 ;(() => {
   const ctx = Object.assign(document.createElement("canvas"), { width: 1, height: 1 }).getContext("2d", {
     willReadFrequently: true,
@@ -35,52 +36,57 @@
     for (const c of layers.reverse()) acc = over(c, acc)
     return acc
   }
+  const opacity = (el) => {
+    let o = 1
+    for (let n = el; n; n = n.parentElement) o *= parseFloat(getComputedStyle(n).opacity)
+    return o
+  }
   const row = (name, fg, bg, min) => {
     const r = ratio(fg, bg)
     return { name, ratio: +r.toFixed(2), min, pass: r >= min }
   }
-  const q = (s) => document.querySelector(s)
+  const label = (el, text) =>
+    `${el.tagName.toLowerCase()}${el.classList[0] ? "." + el.classList[0] : ""} “${text.trim().slice(0, 32)}”`
   const scheme = () => (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-  const text = (name, el) => {
-    if (!el) return { name, ratio: null, min: 4.5, pass: true, skipped: "not on the page (Debug off)" }
-    const bg = backdrop(el)
-    return row(name, over(rgba(getComputedStyle(el).color), bg), bg, 4.5)
+  const isLarge = (cs) => {
+    const px = parseFloat(cs.fontSize)
+    return px >= 24 || (px >= 18.66 && (parseInt(cs.fontWeight, 10) || 400) >= 700)
   }
-  const edge = (name, el) => {
+  const textRow = (el, text, color) => {
+    const cs = getComputedStyle(el)
+    const bg = backdrop(el)
+    const [r, g, b, a] = rgba(color)
+    return row(label(el, text), over([r, g, b, a * opacity(el)], bg), bg, isLarge(cs) ? 3 : 4.5)
+  }
+  const edge = (el) => {
     const page = backdrop(el.parentElement)
     const cs = getComputedStyle(el)
-    if (cs.borderTopStyle === "none" || parseFloat(cs.borderTopWidth) === 0) return { name, ratio: null, min: 3, pass: false }
-    return row(name, over(rgba(cs.borderTopColor), page), page, 3)
+    const name = `edge of ${label(el, el.getAttribute("aria-label") || el.textContent || el.type || "")}`
+    const bordered = cs.borderTopStyle !== "none" && parseFloat(cs.borderTopWidth) > 0
+    // A control with no border is found by its fill instead.
+    const paint = bordered ? cs.borderTopColor : cs.backgroundColor
+    return row(name, over(rgba(paint), page), page, 3)
   }
 
   window.contrastCheck = () => {
-    const input = q("input[type=search]")
-    const button = q("form button[type=submit]")
-    const sw = q("[role=switch]")
-    const page = backdrop(sw.parentElement)
-    const rows = [
-      text("label “Find products” on page", q("label")),
-      text("typed text in the search box", input),
-      text("search button text", button),
-      text("results header", q("output")),
-      text("result title", q(".result-line .title")),
-      text("score row (muted)", q(".scores")),
-      text("result label (muted)", q(".result-line .label")),
-      edge("search box border vs page", input),
-      edge("search button border vs page", button),
-      edge("Debug switch edge vs page", sw),
-      // Off, the track is the page colour on purpose: the edge and the thumb carry that state.
-      sw.getAttribute("aria-checked") === "true"
-        ? row("Debug switch fill (on) vs page", over(rgba(getComputedStyle(sw).backgroundColor), page), page, 3)
-        : { name: "Debug switch fill (off): edge and thumb rows apply", ratio: null, min: 3, pass: true, skipped: "off" },
-      row(
-        "Debug switch thumb vs track",
-        over(rgba(getComputedStyle(sw.firstElementChild).backgroundColor), over(rgba(getComputedStyle(sw).backgroundColor), page)),
-        over(rgba(getComputedStyle(sw).backgroundColor), page),
-        3
-      ),
-    ]
-    return { scheme: scheme(), rows, failing: rows.filter((r) => !r.pass).map((r) => r.name) }
+    const rows = []
+    const seen = new Set()
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const el = node.parentElement
+      if (!node.nodeValue.trim() || seen.has(el)) continue
+      seen.add(el)
+      if (el.closest("[aria-hidden=true], .sr-only, script, style") || !el.getClientRects().length) continue
+      if (getComputedStyle(el).visibility === "hidden") continue
+      rows.push(textRow(el, node.nodeValue, getComputedStyle(el).color))
+    }
+    for (const input of document.querySelectorAll("input[placeholder]")) {
+      rows.push(textRow(input, `placeholder ${input.placeholder}`, getComputedStyle(input, "::placeholder").color))
+    }
+    // A switch keeps a visually hidden checkbox for forms; its painted edge is the [role=switch] element.
+    const controls = "input:not([type=checkbox], [type=hidden]), button:not([role=switch]), [role=switch]"
+    for (const control of document.querySelectorAll(controls)) rows.push(edge(control))
+    return { scheme: scheme(), checked: rows.length, failing: rows.filter((r) => !r.pass) }
   }
 
   window.contrastFocus = () => {

@@ -18,14 +18,14 @@ test("an agent can find and change every control", async () => {
     expect(entry.label, `${entry.component} ${entry.ref} has no name`).toBeTruthy()
   }
   const labels = components.map((entry) => entry.label)
-  for (const label of ["Find products", "Search", "Debug"]) {
+  for (const label of ["Find products", "Search", "Show score breakdown", "Motion"]) {
     expect(labels, `${label} is missing from the snapshot`).toContain(label)
   }
 
   const result = await agent.act({
     steps: [
       { ref: "Find products", action: "setValue", args: ["gluten free pasta"] },
-      { ref: "Debug", action: "setChecked", args: [false] },
+      { ref: "Show score breakdown", action: "setChecked", args: [false] },
       { ref: "Search", action: "press" },
     ],
   })
@@ -33,10 +33,11 @@ test("an agent can find and change every control", async () => {
   expect((screen.getByRole("searchbox", { name: "Find products" }) as HTMLInputElement).value).toBe(
     "gluten free pasta"
   )
-  expect(screen.getByRole("switch", { name: "Debug" }).getAttribute("aria-checked")).toBe("false")
+  expect(screen.getByRole("switch", { name: "Show score breakdown" }).getAttribute("aria-checked")).toBe("false")
   await waitFor(() => expect(fetchMock).toHaveBeenCalledWith("/search?q=gluten+free+pasta", expect.anything()))
-  await screen.findByText("label 3")
-  expect(screen.queryAllByText(/^bm25 /)).toHaveLength(0)
+  await waitFor(() => expect(screen.getByRole("status").textContent).toMatch(/“gluten free pasta”/))
+  expect(screen.getAllByText("Grade 3").length).toBeGreaterThan(0)
+  expect(document.querySelectorAll(".scores")).toHaveLength(0)
 })
 
 test("search_products is registered read-only through document.modelContext and returns the API body", async () => {

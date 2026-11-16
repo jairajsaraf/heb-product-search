@@ -14,6 +14,24 @@ Element.prototype.checkVisibility = () => true
 Element.prototype.getClientRects = () => [] as unknown as DOMRectList
 document.elementFromPoint = () => null
 document.elementsFromPoint = () => []
+// jsdom has no matchMedia, IntersectionObserver or canvas. Reporting reduced motion makes the page render
+// its final state at once, so tests don't wait on animation timers.
+window.matchMedia ??= (query: string) =>
+  ({
+    matches: query.includes("prefers-reduced-motion"),
+    media: query,
+    addEventListener() {},
+    removeEventListener() {},
+  }) as unknown as MediaQueryList
+globalThis.IntersectionObserver ??= class {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+  takeRecords() {
+    return []
+  }
+} as unknown as typeof IntersectionObserver
+HTMLCanvasElement.prototype.getContext = (() => null) as typeof HTMLCanvasElement.prototype.getContext
 globalThis.ResizeObserver ??= class {
   observe() {}
   unobserve() {}

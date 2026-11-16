@@ -1,0 +1,1050 @@
+{
+ "bm25_weight": 0.1,
+ "examples": [
+  {
+   "id": "s530",
+   "query": "protein-packed chicken salads",
+   "role": "lead",
+   "hybrid": [
+    {
+     "rank": 1,
+     "product_id": "11080522",
+     "title": "Meal Simple by H-E-B Rotisserie Chicken Salad - Small",
+     "brand": "Meal Simple by H-E-B",
+     "score": 0.8291934245150601,
+     "bm25_score": 0.8619100981169087,
+     "semantic_score": 0.8255582451820374,
+     "grade": 3
+    },
+    {
+     "rank": 2,
+     "product_id": "4179028",
+     "title": "Meal Simple by H-E-B Buffalo Chicken Salad",
+     "brand": "Meal Simple by H-E-B",
+     "score": 0.8284128610299509,
+     "bm25_score": 0.8342161814436134,
+     "semantic_score": 0.827768087387085,
+     "grade": 3
+    },
+    {
+     "rank": 3,
+     "product_id": "11079532",
+     "title": "Meal Simple by H-E-B Rotisserie Chicken Salad - Large",
+     "brand": "Meal Simple by H-E-B",
+     "score": 0.8246499015302385,
+     "bm25_score": 0.8546045555779587,
+     "semantic_score": 0.8213216066360474,
+     "grade": 3
+    },
+    {
+     "rank": 4,
+     "product_id": "15717031",
+     "title": "Meal Simple by H-E-B Asian-Style Chicken Greens & Grains Salad",
+     "brand": "Meal Simple by H-E-B",
+     "score": 0.8082564472924818,
+     "bm25_score": 0.7821100947967656,
+     "semantic_score": 0.8111616373062134,
+     "grade": 3
+    },
+    {
+     "rank": 5,
+     "product_id": "8920005",
+     "title": "Meal Simple by H-E-B Southwest Chicken Entr&eacute;e Salad",
+     "brand": "Meal Simple by H-E-B",
+     "score": 0.8070174180908382,
+     "bm25_score": 0.8209654921724194,
+     "semantic_score": 0.8054676651954651,
+     "grade": 3
+    },
+    {
+     "rank": 6,
+     "product_id": "5707008",
+     "title": "Meal Simple by H-E-B Garden Entrée Salad & Rotisserie Chicken Salad",
+     "brand": "Meal Simple by H-E-B",
+     "score": 0.8045072219145848,
+     "bm25_score": 0.791516563666417,
+     "semantic_score": 0.8059506416320801,
+     "grade": 3
+    },
+    {
+     "rank": 7,
+     "product_id": "4179027",
+     "title": "Meal Simple by H-E-B BBQ Chicken Salad",
+     "brand": "Meal Simple by H-E-B",
+     "score": 0.8043203674345093,
+     "bm25_score": 0.8193293438244628,
+     "semantic_score": 0.8026527166366577,
+     "grade": 3
+    },
+    {
+     "rank": 8,
+     "product_id": "2653132",
+     "title": "Meal Simple by H-E-B Chicken Caesar Entr&eacute;e Salad",
+     "brand": "Meal Simple by H-E-B",
+     "score": 0.8003669876816528,
+     "bm25_score": 0.8567999789741212,
+     "semantic_score": 0.7940967082977295,
+     "grade": 3
+    },
+    {
+     "rank": 9,
+     "product_id": "6288165",
+     "title": "H-E-B Salad Bowl - BLT Chicken & Uncured Bacon",
+     "brand": "H-E-B",
+     "score": 0.7880835728421861,
+     "bm25_score": 0.8390166328102886,
+     "semantic_score": 0.7824243903160095,
+     "grade": 3
+    },
+    {
+     "rank": 10,
+     "product_id": "6226620",
+     "title": "Meal Simple by H-E-B Chicken Cobb Entr&eacute;e Salad",
+     "brand": "Meal Simple by H-E-B",
+     "score": 0.7880279546682406,
+     "bm25_score": 0.7126159724636557,
+     "semantic_score": 0.7964071035385132,
+     "grade": 3
+    }
+   ],
+   "keyword": [
+    {
+     "rank": 1,
+     "product_id": "407687",
+     "title": "Central Market Natural Chicken Breast Kabob With Vegetables",
+     "brand": "Central Market",
+     "score": 1.0,
+     "bm25_score": 1.0,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 2,
+     "product_id": "3911002",
+     "title": "H-E-B Wild Caught Chunk White Albacore Tuna in Spring Water Pouch",
+     "brand": "H-E-B",
+     "score": 0.9300561539268166,
+     "bm25_score": 0.9300561539268166,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 3,
+     "product_id": "6364114",
+     "title": "H-E-B Wild Caught Real Wood Smoked Tuna Salad - Lentils",
+     "brand": "H-E-B",
+     "score": 0.9068018459868104,
+     "bm25_score": 0.9068018459868104,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 4,
+     "product_id": "1155160",
+     "title": "Central Market Southwest Marinated Chicken Kabob",
+     "brand": "Central Market",
+     "score": 0.90235439043275,
+     "bm25_score": 0.90235439043275,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 5,
+     "product_id": "1155163",
+     "title": "Central Market Chipotle Lime Marinated Chicken Kabob",
+     "brand": "Central Market",
+     "score": 0.8969723921112275,
+     "bm25_score": 0.8969723921112275,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 6,
+     "product_id": "1155161",
+     "title": "Central Market Herb Dijon Marinated Chicken Kabob",
+     "brand": "Central Market",
+     "score": 0.8899272620068329,
+     "bm25_score": 0.8899272620068329,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 7,
+     "product_id": "921750",
+     "title": "H-E-B Garbanzo Beans",
+     "brand": "H-E-B",
+     "score": 0.8782137398372258,
+     "bm25_score": 0.8782137398372258,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 8,
+     "product_id": "4171001",
+     "title": "H-E-B Shake Rattle & Bowl - Fajita Salad with Chicken",
+     "brand": "H-E-B",
+     "score": 0.8707615352979678,
+     "bm25_score": 0.8707615352979678,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 9,
+     "product_id": "556374",
+     "title": "Central Market Grilled Chicken Cobb Salad",
+     "brand": "Central Market",
+     "score": 0.8676377652293147,
+     "bm25_score": 0.8676377652293147,
+     "semantic_score": null,
+     "grade": 3
+    },
+    {
+     "rank": 10,
+     "product_id": "1167176",
+     "title": "Central Market Chicken Salad Medley",
+     "brand": "Central Market",
+     "score": 0.8642881911064039,
+     "bm25_score": 0.8642881911064039,
+     "semantic_score": null,
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "s98",
+   "query": "quick and easy chicken dinner",
+   "role": "meaning",
+   "hybrid": [
+    {
+     "rank": 1,
+     "product_id": "10339031",
+     "title": "Meal Simple by H-E-B Parmesan Chicken Pasta – Family-Size",
+     "brand": "Meal Simple by H-E-B",
+     "score": 0.8120326686180969,
+     "bm25_score": 0.8561292174233391,
+     "semantic_score": 0.8071330785751343,
+     "grade": 3
+    },
+    {
+     "rank": 2,
+     "product_id": "3282544",
+     "title": "Meal Simple by H-E-B Herb Grilled Chicken Bowl",
+     "brand": "Meal Simple by H-E-B",
+     "score": 0.800203902559166,
+     "bm25_score": 0.6353561385143277,
+     "semantic_score": 0.8185203671455383,
+     "grade": 3
+    },
+    {
+     "rank": 3,
+     "product_id": "459035",
+     "title": "Hill Country Fare Boneless Skinless Thin Sliced Chicken Breast",
+     "brand": "Hill Country Fare",
+     "score": 0.7988445242340453,
+     "bm25_score": 0.818722923691161,
+     "semantic_score": 0.7966358661651611,
+     "grade": 0
+    },
+    {
+     "rank": 4,
+     "product_id": "4277028",
+     "title": "Meal Simple by H-E-B Poblano Chicken Pasta Bowl",
+     "brand": "Meal Simple by H-E-B",
+     "score": 0.7944629496208204,
+     "bm25_score": 0.8133378683242927,
+     "semantic_score": 0.7923657298088074,
+     "grade": 3
+    },
+    {
+     "rank": 5,
+     "product_id": "4409022",
+     "title": "Meal Simple by H-E-B Chicken Tenders (Sold Cold)",
+     "brand": "Meal Simple by H-E-B",
+     "score": 0.7919036143389718,
+     "bm25_score": 0.869965546694772,
+     "semantic_score": 0.7832300662994385,
+     "grade": 2
+    },
+    {
+     "rank": 6,
+     "product_id": "2163859",
+     "title": "H-E-B Meat Market Marinated Chicken Breast - Garlic Parmesan",
+     "brand": "H-E-B",
+     "score": 0.7863981109024354,
+     "bm25_score": 0.8604430965197761,
+     "semantic_score": 0.7781708836555481,
+     "grade": null
+    },
+    {
+     "rank": 7,
+     "product_id": "6323007",
+     "title": "Hill Country Fare Heat & Eat Frozen Breaded Chicken Patties - Texas-Size Pack",
+     "brand": "Hill Country Fare",
+     "score": 0.7820786595344543,
+     "bm25_score": 1.0,
+     "semantic_score": 0.7578651905059814,
+     "grade": null
+    },
+    {
+     "rank": 8,
+     "product_id": "684576",
+     "title": "H-E-B Natural Fresh Whole Chicken",
+     "brand": "H-E-B",
+     "score": 0.7807076751632611,
+     "bm25_score": 0.7633187169264957,
+     "semantic_score": 0.7826398015022278,
+     "grade": null
+    },
+    {
+     "rank": 9,
+     "product_id": "10340010",
+     "title": "Meal Simple by H-E-B Cajun-Style Chicken Pasta Bowl",
+     "brand": "Meal Simple by H-E-B",
+     "score": 0.7783490202061818,
+     "bm25_score": 0.6356368275806167,
+     "semantic_score": 0.7942059636116028,
+     "grade": 3
+    },
+    {
+     "rank": 10,
+     "product_id": "8916520",
+     "title": "Meal Simple by H-E-B Shredded White Meat Chicken - Small (Sold Cold)",
+     "brand": "Meal Simple by H-E-B",
+     "score": 0.7750850045200945,
+     "bm25_score": 0.6102243299452081,
+     "semantic_score": 0.793402910232544,
+     "grade": 2
+    }
+   ],
+   "keyword": [
+    {
+     "rank": 1,
+     "product_id": "6323007",
+     "title": "Hill Country Fare Heat & Eat Frozen Breaded Chicken Patties - Texas-Size Pack",
+     "brand": "Hill Country Fare",
+     "score": 1.0,
+     "bm25_score": 1.0,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 2,
+     "product_id": "8406537",
+     "title": "H-E-B Meat Market Marinated Chicken Kabobs - Wild Garlic",
+     "brand": "H-E-B",
+     "score": 0.9439797690172472,
+     "bm25_score": 0.9439797690172472,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 3,
+     "product_id": "10077515",
+     "title": "H-E-B Seasoned Boneless Chicken Thighs - Buttermilk Ranch",
+     "brand": "H-E-B",
+     "score": 0.9372083762341267,
+     "bm25_score": 0.9372083762341267,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 4,
+     "product_id": "2163846",
+     "title": "H-E-B Meat Market Marinated Chicken Breast &ndash; Smoky BBQ",
+     "brand": "H-E-B",
+     "score": 0.9299174945638874,
+     "bm25_score": 0.9299174945638874,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 5,
+     "product_id": "5325021",
+     "title": "H-E-B Seasoned Chicken Breast Tenderloins - Buffalo Style",
+     "brand": "H-E-B",
+     "score": 0.9150436747942999,
+     "bm25_score": 0.9150436747942999,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 6,
+     "product_id": "2163850",
+     "title": "H-E-B Meat Market Marinated Chicken Breast - Rosemary",
+     "brand": "H-E-B",
+     "score": 0.9108475376518033,
+     "bm25_score": 0.9108475376518033,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 7,
+     "product_id": "8406536",
+     "title": "H-E-B Meat Market Marinated Chicken Kabobs - Honey BBQ",
+     "brand": "H-E-B",
+     "score": 0.90932445805694,
+     "bm25_score": 0.90932445805694,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 8,
+     "product_id": "8407012",
+     "title": "H-E-B Meat Market Marinated Chicken Kabobs - Garlic Parmesan",
+     "brand": "H-E-B",
+     "score": 0.9071339489990488,
+     "bm25_score": 0.9071339489990488,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 9,
+     "product_id": "7996001",
+     "title": "H-E-B Meat Market Marinated Chicken Wings - Ginger Soy",
+     "brand": "H-E-B",
+     "score": 0.906554823627199,
+     "bm25_score": 0.906554823627199,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 10,
+     "product_id": "10267035",
+     "title": "H-E-B Meat Market Marinated Chicken Breasts – California-Style Orange",
+     "brand": "H-E-B",
+     "score": 0.8956456954642519,
+     "bm25_score": 0.8956456954642519,
+     "semantic_score": null,
+     "grade": null
+    }
+   ]
+  },
+  {
+   "id": "s4",
+   "query": "low-sodium dried beans",
+   "role": "meaning",
+   "hybrid": [
+    {
+     "rank": 1,
+     "product_id": "861135",
+     "title": "Central Market Organics Low Sodium Dark Red Kidney Beans",
+     "brand": "Central Market",
+     "score": 0.8229300417448332,
+     "bm25_score": 0.9170580287230513,
+     "semantic_score": 0.8124713897705078,
+     "grade": 3
+    },
+    {
+     "rank": 2,
+     "product_id": "861134",
+     "title": "Central Market Organics Low Sodium Pinto Beans",
+     "brand": "Central Market",
+     "score": 0.8224436964615257,
+     "bm25_score": 0.9351596494754861,
+     "semantic_score": 0.8099197149276733,
+     "grade": 3
+    },
+    {
+     "rank": 3,
+     "product_id": "861136",
+     "title": "Central Market Organics Low Sodium Garbanzo Beans",
+     "brand": "Central Market",
+     "score": 0.8216332211227817,
+     "bm25_score": 0.9266239545063202,
+     "semantic_score": 0.809967577457428,
+     "grade": 3
+    },
+    {
+     "rank": 4,
+     "product_id": "1573171",
+     "title": "H-E-B No Salt Added Pinto Beans",
+     "brand": "H-E-B",
+     "score": 0.8189636861728602,
+     "bm25_score": 0.9528992528189945,
+     "semantic_score": 0.8040819764137268,
+     "grade": 3
+    },
+    {
+     "rank": 5,
+     "product_id": "861133",
+     "title": "Central Market Organics Low Sodium Black Beans",
+     "brand": "Central Market",
+     "score": 0.8178122057648105,
+     "bm25_score": 0.9266239545063202,
+     "semantic_score": 0.8057220578193665,
+     "grade": 3
+    },
+    {
+     "rank": 6,
+     "product_id": "1573156",
+     "title": "H-E-B Pinto Beans with Jalapenos & Bacon",
+     "brand": "H-E-B",
+     "score": 0.8168094469304173,
+     "bm25_score": 0.9220168125582625,
+     "semantic_score": 0.8051197528839111,
+     "grade": 0
+    },
+    {
+     "rank": 7,
+     "product_id": "125847",
+     "title": "H-E-B Dark Red Kidney Beans",
+     "brand": "H-E-B",
+     "score": 0.8086438840786724,
+     "bm25_score": 0.9628022374313164,
+     "semantic_score": 0.7915151715278625,
+     "grade": 3
+    },
+    {
+     "rank": 8,
+     "product_id": "1573120",
+     "title": "H-E-B No Salt Added Black Beans",
+     "brand": "H-E-B",
+     "score": 0.8051251479835434,
+     "bm25_score": 0.9446022002410123,
+     "semantic_score": 0.789627730846405,
+     "grade": 3
+    },
+    {
+     "rank": 9,
+     "product_id": "1562639",
+     "title": "H-E-B Original Baked Beans",
+     "brand": "H-E-B",
+     "score": 0.7993339349083726,
+     "bm25_score": 0.9018481267021335,
+     "semantic_score": 0.7879434823989868,
+     "grade": null
+    },
+    {
+     "rank": 10,
+     "product_id": "1562720",
+     "title": "H-E-B Vegetarian Baked Beans",
+     "brand": "H-E-B",
+     "score": 0.7968717949266532,
+     "bm25_score": 0.8996803926182771,
+     "semantic_score": 0.7854486703872681,
+     "grade": 2
+    }
+   ],
+   "keyword": [
+    {
+     "rank": 1,
+     "product_id": "676811",
+     "title": "H-E-B Mayocoba Beans",
+     "brand": "H-E-B",
+     "score": 1.0,
+     "bm25_score": 1.0,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 2,
+     "product_id": "126841",
+     "title": "H-E-B Baby Lima Beans",
+     "brand": "H-E-B",
+     "score": 0.9941582965587676,
+     "bm25_score": 0.9941582965587676,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 3,
+     "product_id": "126869",
+     "title": "H-E-B Large Lima Beans",
+     "brand": "H-E-B",
+     "score": 0.9941582965587676,
+     "bm25_score": 0.9941582965587676,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 4,
+     "product_id": "676813",
+     "title": "H-E-B Small Red Beans",
+     "brand": "H-E-B",
+     "score": 0.9941582965587676,
+     "bm25_score": 0.9941582965587676,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 5,
+     "product_id": "125151",
+     "title": "H-E-B Red Kidney Beans",
+     "brand": "H-E-B",
+     "score": 0.9927116039236504,
+     "bm25_score": 0.9927116039236504,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 6,
+     "product_id": "127789",
+     "title": "H-E-B Pinto Beans",
+     "brand": "H-E-B",
+     "score": 0.9784470503969799,
+     "bm25_score": 0.9784470503969799,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 7,
+     "product_id": "127071",
+     "title": "H-E-B Black Beans",
+     "brand": "H-E-B",
+     "score": 0.9771352585893214,
+     "bm25_score": 0.9771352585893214,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 8,
+     "product_id": "921750",
+     "title": "H-E-B Garbanzo Beans",
+     "brand": "H-E-B",
+     "score": 0.9743853207675698,
+     "bm25_score": 0.9743853207675698,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 9,
+     "product_id": "921749",
+     "title": "H-E-B Refried Beans with Jalapenos",
+     "brand": "H-E-B",
+     "score": 0.9719349966671512,
+     "bm25_score": 0.9719349966671512,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 10,
+     "product_id": "1275725",
+     "title": "Hill Country Fare Pinto Beans",
+     "brand": "Hill Country Fare",
+     "score": 0.9702784143545293,
+     "bm25_score": 0.9702784143545293,
+     "semantic_score": null,
+     "grade": null
+    }
+   ]
+  },
+  {
+   "id": "s206",
+   "query": "H-E-B size 7 diapers",
+   "role": "keyword",
+   "hybrid": [
+    {
+     "rank": 1,
+     "product_id": "5219003",
+     "title": "H-E-B Baby Diapers - Size 7&nbsp;- Texas-Size Pack",
+     "brand": "H-E-B",
+     "score": 0.8875010198452125,
+     "bm25_score": 0.9959192932626105,
+     "semantic_score": 0.8754545450210571,
+     "grade": null
+    },
+    {
+     "rank": 2,
+     "product_id": "5198001",
+     "title": "H-E-B Baby Medium Pack Diapers - Size 7",
+     "brand": "H-E-B",
+     "score": 0.8828881567814002,
+     "bm25_score": 0.9959192932626105,
+     "semantic_score": 0.8703291416168213,
+     "grade": 3
+    },
+    {
+     "rank": 3,
+     "product_id": "5199460",
+     "title": "H-E-B Baby Small Pack Diapers - Size 7",
+     "brand": "H-E-B",
+     "score": 0.8760924742397525,
+     "bm25_score": 0.9972755171625394,
+     "semantic_score": 0.8626277446746826,
+     "grade": 3
+    },
+    {
+     "rank": 4,
+     "product_id": "5236094",
+     "title": "H-E-B Baby Large Pack Diapers - Size 7",
+     "brand": "H-E-B",
+     "score": 0.8734490036964416,
+     "bm25_score": 1.0,
+     "semantic_score": 0.8593878149986267,
+     "grade": 3
+    },
+    {
+     "rank": 5,
+     "product_id": "5236090",
+     "title": "H-E-B Baby Large Pack Diapers - Size 6",
+     "brand": "H-E-B",
+     "score": 0.8675129074875972,
+     "bm25_score": 0.9090885112925985,
+     "semantic_score": 0.8628934025764465,
+     "grade": 0
+    },
+    {
+     "rank": 6,
+     "product_id": "5564118",
+     "title": "H-E-B Baby Plus Overnight Diapers - Size 7",
+     "brand": "H-E-B",
+     "score": 0.8583039660695955,
+     "bm25_score": 0.9896934225596633,
+     "semantic_score": 0.8437051773071289,
+     "grade": 3
+    },
+    {
+     "rank": 7,
+     "product_id": "5564074",
+     "title": "H-E-B Baby Small Pack Overnight Diapers &ndash; Size 7",
+     "brand": "H-E-B",
+     "score": 0.8567372360265695,
+     "bm25_score": 0.9875957155589685,
+     "semantic_score": 0.8421974182128906,
+     "grade": null
+    },
+    {
+     "rank": 8,
+     "product_id": "5197501",
+     "title": "H-E-B Baby Medium Pack Diapers - Size 6",
+     "brand": "H-E-B",
+     "score": 0.8428287019437078,
+     "bm25_score": 0.6903870007450615,
+     "semantic_score": 0.8597667217254639,
+     "grade": 0
+    },
+    {
+     "rank": 9,
+     "product_id": "5196040",
+     "title": "H-E-B Baby Medium Pack Diapers - Size 3",
+     "brand": "H-E-B",
+     "score": 0.8390672122245062,
+     "bm25_score": 0.6895857203056702,
+     "semantic_score": 0.8556762933731079,
+     "grade": 0
+    },
+    {
+     "rank": 10,
+     "product_id": "5199459",
+     "title": "H-E-B Baby Small Pack Diapers - Size 6",
+     "brand": "H-E-B",
+     "score": 0.8327204745473359,
+     "bm25_score": 0.6928028280157786,
+     "semantic_score": 0.8482668995857239,
+     "grade": 0
+    }
+   ],
+   "keyword": [
+    {
+     "rank": 1,
+     "product_id": "5236094",
+     "title": "H-E-B Baby Large Pack Diapers - Size 7",
+     "brand": "H-E-B",
+     "score": 1.0,
+     "bm25_score": 1.0,
+     "semantic_score": null,
+     "grade": 3
+    },
+    {
+     "rank": 2,
+     "product_id": "5199460",
+     "title": "H-E-B Baby Small Pack Diapers - Size 7",
+     "brand": "H-E-B",
+     "score": 0.9972755171625394,
+     "bm25_score": 0.9972755171625394,
+     "semantic_score": null,
+     "grade": 3
+    },
+    {
+     "rank": 3,
+     "product_id": "5198001",
+     "title": "H-E-B Baby Medium Pack Diapers - Size 7",
+     "brand": "H-E-B",
+     "score": 0.9959192932626105,
+     "bm25_score": 0.9959192932626105,
+     "semantic_score": null,
+     "grade": 3
+    },
+    {
+     "rank": 4,
+     "product_id": "5219003",
+     "title": "H-E-B Baby Diapers - Size 7&nbsp;- Texas-Size Pack",
+     "brand": "H-E-B",
+     "score": 0.9959192932626105,
+     "bm25_score": 0.9959192932626105,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 5,
+     "product_id": "5564118",
+     "title": "H-E-B Baby Plus Overnight Diapers - Size 7",
+     "brand": "H-E-B",
+     "score": 0.9896934225596633,
+     "bm25_score": 0.9896934225596633,
+     "semantic_score": null,
+     "grade": 3
+    },
+    {
+     "rank": 6,
+     "product_id": "5564074",
+     "title": "H-E-B Baby Small Pack Overnight Diapers &ndash; Size 7",
+     "brand": "H-E-B",
+     "score": 0.9875957155589685,
+     "bm25_score": 0.9875957155589685,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 7,
+     "product_id": "5715087",
+     "title": "Field & Future by H-E-B Plus Pack Baby Diapers  - Size 7",
+     "brand": "Field & Future by H-E-B",
+     "score": 0.9145349450177073,
+     "bm25_score": 0.9145349450177073,
+     "semantic_score": null,
+     "grade": null
+    },
+    {
+     "rank": 8,
+     "product_id": "15145522",
+     "title": "Hill Country Fare Baby Diapers Small Pack - Size 7",
+     "brand": "Hill Country Fare",
+     "score": 0.9098269924411531,
+     "bm25_score": 0.9098269924411531,
+     "semantic_score": null,
+     "grade": 2
+    },
+    {
+     "rank": 9,
+     "product_id": "15145533",
+     "title": "Hill Country Fare Baby Diapers Large Pack - Size 7",
+     "brand": "Hill Country Fare",
+     "score": 0.9098269924411531,
+     "bm25_score": 0.9098269924411531,
+     "semantic_score": null,
+     "grade": 3
+    },
+    {
+     "rank": 10,
+     "product_id": "5236090",
+     "title": "H-E-B Baby Large Pack Diapers - Size 6",
+     "brand": "H-E-B",
+     "score": 0.9090885112925985,
+     "bm25_score": 0.9090885112925985,
+     "semantic_score": null,
+     "grade": 0
+    }
+   ]
+  },
+  {
+   "id": "s435",
+   "query": "seasoning for chicken fajitas",
+   "role": "fail",
+   "hybrid": [
+    {
+     "rank": 1,
+     "product_id": "372460",
+     "title": "H-E-B Seasoned Chicken Breast Fajitas",
+     "brand": "H-E-B",
+     "score": 0.850334299546026,
+     "bm25_score": 0.9999014232709291,
+     "semantic_score": 0.8337157368659973,
+     "grade": 0
+    },
+    {
+     "rank": 2,
+     "product_id": "493076",
+     "title": "H-E-B Seasoned Spicy Boneless Skinless Chicken Thighs for Fajitas",
+     "brand": "H-E-B",
+     "score": 0.8325813523964156,
+     "bm25_score": 0.9739775578539261,
+     "semantic_score": 0.8168706893920898,
+     "grade": 0
+    },
+    {
+     "rank": 3,
+     "product_id": "372471",
+     "title": "H-E-B Seasoned Boneless Skinless Chicken Thighs for Fajitas",
+     "brand": "H-E-B",
+     "score": 0.8242654462678242,
+     "bm25_score": 0.9991123875210761,
+     "semantic_score": 0.8048380613327026,
+     "grade": 0
+    },
+    {
+     "rank": 4,
+     "product_id": "15437158",
+     "title": "H-E-B Meat Market&nbsp;Chicken Fajita Kit - Pan Saut&eacute;",
+     "brand": "H-E-B",
+     "score": 0.823234523498311,
+     "bm25_score": 0.8060839291740896,
+     "semantic_score": 0.8251401782035828,
+     "grade": 0
+    },
+    {
+     "rank": 5,
+     "product_id": "1993835",
+     "title": "H-E-B Mi Tienda Beef Fajita Seasoning",
+     "brand": "H-E-B Mi Tienda",
+     "score": 0.8222114168736507,
+     "bm25_score": 0.8148411146135823,
+     "semantic_score": 0.8230303525924683,
+     "grade": 2
+    },
+    {
+     "rank": 6,
+     "product_id": "3603022",
+     "title": "Meal Simple by H-E-B Chicken Thigh Fajitas",
+     "brand": "Meal Simple by H-E-B",
+     "score": 0.8194777898712464,
+     "bm25_score": 0.8253537940219121,
+     "semantic_score": 0.8188249468803406,
+     "grade": 0
+    },
+    {
+     "rank": 7,
+     "product_id": "372469",
+     "title": "H-E-B Seasoned Chicken Thighs for Fajitas",
+     "brand": "H-E-B",
+     "score": 0.8165520191192627,
+     "bm25_score": 1.0,
+     "semantic_score": 0.7961689233779907,
+     "grade": 0
+    },
+    {
+     "rank": 8,
+     "product_id": "6178010",
+     "title": "H-E-B Fully Cooked Seasoned Chicken Breast Fajitas",
+     "brand": "H-E-B",
+     "score": 0.8121292591755647,
+     "bm25_score": 0.7130080468108836,
+     "semantic_score": 0.8231427669525146,
+     "grade": 0
+    },
+    {
+     "rank": 9,
+     "product_id": "1449759",
+     "title": "H-E-B Seasoned Chicken Breast for Fajitas",
+     "brand": "H-E-B",
+     "score": 0.8092201993456285,
+     "bm25_score": 0.9946638798622291,
+     "semantic_score": 0.788615345954895,
+     "grade": 0
+    },
+    {
+     "rank": 10,
+     "product_id": "372907",
+     "title": "H-E-B Seasoned Pork Fajitas",
+     "brand": "H-E-B",
+     "score": 0.8078903212629023,
+     "bm25_score": 0.7576414490563298,
+     "semantic_score": 0.8134735822677612,
+     "grade": 0
+    }
+   ],
+   "keyword": [
+    {
+     "rank": 1,
+     "product_id": "372469",
+     "title": "H-E-B Seasoned Chicken Thighs for Fajitas",
+     "brand": "H-E-B",
+     "score": 1.0,
+     "bm25_score": 1.0,
+     "semantic_score": null,
+     "grade": 0
+    },
+    {
+     "rank": 2,
+     "product_id": "372460",
+     "title": "H-E-B Seasoned Chicken Breast Fajitas",
+     "brand": "H-E-B",
+     "score": 0.9999014232709291,
+     "bm25_score": 0.9999014232709291,
+     "semantic_score": null,
+     "grade": 0
+    },
+    {
+     "rank": 3,
+     "product_id": "372471",
+     "title": "H-E-B Seasoned Boneless Skinless Chicken Thighs for Fajitas",
+     "brand": "H-E-B",
+     "score": 0.9991123875210761,
+     "bm25_score": 0.9991123875210761,
+     "semantic_score": null,
+     "grade": 0
+    },
+    {
+     "rank": 4,
+     "product_id": "1449759",
+     "title": "H-E-B Seasoned Chicken Breast for Fajitas",
+     "brand": "H-E-B",
+     "score": 0.9946638798622291,
+     "bm25_score": 0.9946638798622291,
+     "semantic_score": null,
+     "grade": 0
+    },
+    {
+     "rank": 5,
+     "product_id": "493076",
+     "title": "H-E-B Seasoned Spicy Boneless Skinless Chicken Thighs for Fajitas",
+     "brand": "H-E-B",
+     "score": 0.9739775578539261,
+     "bm25_score": 0.9739775578539261,
+     "semantic_score": null,
+     "grade": 0
+    },
+    {
+     "rank": 6,
+     "product_id": "1850306",
+     "title": "H-E-B Mi Tienda Seasoned Boneless Skinless Chicken Leg Quarters for Fajitas",
+     "brand": "H-E-B Mi Tienda",
+     "score": 0.8892394981273142,
+     "bm25_score": 0.8892394981273142,
+     "semantic_score": null,
+     "grade": 0
+    },
+    {
+     "rank": 7,
+     "product_id": "125209",
+     "title": "H-E-B Fully Cooked Frozen Seasoned Chicken Thigh Fajitas",
+     "brand": "H-E-B",
+     "score": 0.8628550769132854,
+     "bm25_score": 0.8628550769132854,
+     "semantic_score": null,
+     "grade": 0
+    },
+    {
+     "rank": 8,
+     "product_id": "563563",
+     "title": "H-E-B Fully Cooked Frozen Seasoned Chicken Thigh Fajitas - Texas-Size Pack",
+     "brand": "H-E-B",
+     "score": 0.8455625729589068,
+     "bm25_score": 0.8455625729589068,
+     "semantic_score": null,
+     "grade": 0
+    },
+    {
+     "rank": 9,
+     "product_id": "3603022",
+     "title": "Meal Simple by H-E-B Chicken Thigh Fajitas",
+     "brand": "Meal Simple by H-E-B",
+     "score": 0.8253537940219121,
+     "bm25_score": 0.8253537940219121,
+     "semantic_score": null,
+     "grade": 0
+    },
+    {
+     "rank": 10,
+     "product_id": "372917",
+     "title": "H-E-B Seasoned Pork for Fajitas, Value Pack",
+     "brand": "H-E-B",
+     "score": 0.8148735390968411,
+     "bm25_score": 0.8148735390968411,
+     "semantic_score": null,
+     "grade": 0
+    }
+   ]
+  }
+ ]
+}
