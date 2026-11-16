@@ -321,6 +321,18 @@ Live check after the deploy (confirmed by curl and `gcloud run services describe
 - The old local images `heb-search:6a`, `6c` and `landing-check` were removed afterwards. Only `6d` is kept.
 - The Lighthouse runs above (the 1.0 table) describe the old page. For the new page, see `frontend_verification.md` section 4.2.
 
+**Commit stamp redeploy (2026-11-16, after PRs 17 to 19; run by the owner).** The image was rebuilt with the `GIT_SHA` build argument so `/health` reports its commit. Nothing the image copies changed between `7b90613` (PR 17) and `627b891` (`git diff --stat` over the Dockerfile's inputs is empty), so the served ranking is the one 6.2 scored.
+
+| Step | Command | Exit | Result |
+|---|---|---|---|
+| Tests | `main` CI, run 43933459118, at `627b891` | 0 | python 29 passed; frontend 96 passed; image job `/health` returned `627b891` |
+| Build | `docker build --build-arg GIT_SHA=$(git rev-parse HEAD) -t heb-search:6e .` | not seen | run by the owner; size not recorded |
+| Local smoke | `docker run --rm -p 8081:8080 heb-search:6e`, curl | n/a | `/health` 200 `{"status":"ok","mode":"hybrid","commit":"627b891dbbbb0d1e4a2fcdbccb8632b0a1582ae0"}`; `/search?q=gluten free pasta&k=3` 200; `k=999` 422; `/` 200 |
+| Push | `docker push us-central1-docker.pkg.dev/product-search-514708/heb-search/heb-search:6e` | not seen | run by the owner; digest not recorded |
+| Deploy | same `gcloud run deploy` command as the 6d row, with `:6e` | not seen | run by the owner; revision `heb-search-00004-sfz`, 100% of traffic |
+
+Live check after the deploy (confirmed by curl and `gcloud run services describe`): the same four results as the local smoke test, with `/health` reporting `627b891`. Revision and service maximum are both 1 instance.
+
 ## 7. Open items
 
 Items 1 to 5 were the pre-run list from 6a; all are settled.

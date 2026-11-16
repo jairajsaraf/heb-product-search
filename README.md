@@ -213,7 +213,7 @@ npm run build    # tsc -b && vite build, into frontend/dist
 
 **API additions the page relies on.** `GET /search` takes an optional `mode`, either `hybrid` or `bm25`. `bm25` ranks by the keyword score alone, so every `semantic_score` is null; any other value returns 422, and leaving it out uses the server's default mode. The server gzips responses of 1,000 bytes or more, and serves `.woff2` fonts uncompressed. The page treats an answer whose `mode` is not `bm25` as a server that ignores the parameter and never shows it as the keyword-only list.
 
-The live Cloud Run service runs this page and API since 2026-11-16 (revision `heb-search-00003-5vj`; see [`reports/verification.md`](reports/verification.md) section 6.6).
+The live Cloud Run service runs this page and API since 2026-11-16 (revision `heb-search-00004-sfz`, built from commit `627b891`; see [`reports/verification.md`](reports/verification.md) section 6.6).
 
 The page also registers a read-only `search_products` tool through `@ui-sdk/react` agent support ([`frontend/src/agent.ts`](frontend/src/agent.ts)). A screenshot is in [`reports/frontend_screenshot.jpg`](reports/frontend_screenshot.jpg), and a Lighthouse run of the landing page in [`reports/lighthouse.json`](reports/lighthouse.json) (that file is from the older page; runs of the current page, local and live, are in [`reports/frontend_verification.md`](reports/frontend_verification.md) sections 4.1 and 4.2).
 
@@ -224,7 +224,7 @@ docker build --build-arg GIT_SHA=$(git rev-parse HEAD) -t heb-search .
 docker run -p 8080:8080 heb-search
 ```
 
-The build downloads MiniLM and computes the index inside the image, sets `HF_HUB_OFFLINE=1`, and serves the API and the built frontend on one origin. `/health` also returns `commit`, taken from the `GIT_SHA` build argument (`docker build --build-arg GIT_SHA=$(git rev-parse HEAD) ...`), and `unknown` when it is not passed; the live service was built before this change, so its `/health` does not report a commit until the next redeploy. The server listens on `$PORT`, which Cloud Run sets, and on 8080 if unset. Build, smoke-test and deploy records: [`reports/verification.md`](reports/verification.md) sections 5 and 6.6. The image also contains all 288 labels and `split_v1.json`; the repository is public, so the owner accepted this ([`reports/holdout_prereg.md`](reports/holdout_prereg.md), decision 3).
+The build downloads MiniLM and computes the index inside the image, sets `HF_HUB_OFFLINE=1`, and serves the API and the built frontend on one origin. `/health` also returns `commit`, taken from the `GIT_SHA` build argument (`docker build --build-arg GIT_SHA=$(git rev-parse HEAD) ...`), and `unknown` when it is not passed The live service reports `627b891`. The server listens on `$PORT`, which Cloud Run sets, and on 8080 if unset. Build, smoke-test and deploy records: [`reports/verification.md`](reports/verification.md) sections 5 and 6.6. The image also contains all 288 labels and `split_v1.json`; the repository is public, so the owner accepted this ([`reports/holdout_prereg.md`](reports/holdout_prereg.md), decision 3).
 
 Deployed on Google Cloud Run (`us-central1`, 1 CPU, 2 GiB, at most one instance, public and unauthenticated; [`reports/verification.md`](reports/verification.md) 6.6). The health route is `/health` because `/healthz` returned Google's own 404 on Cloud Run; the cause is inferred from Cloud Run's known-issues page, which reserves some paths ending in `z`.
 
