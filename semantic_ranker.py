@@ -10,6 +10,11 @@ from baseline_ranker import BM25Ranker, load_json, save_json, preprocess_text, c
 # Phase 3 reranker (used only when HybridRanker is built with reranker_model and rank(rerank=True)).
 RERANKER_MODEL = 'cross-encoder/ms-marco-MiniLM-L6-v2'
 RERANKER_REVISION = '233902d25c440f23af6f7d6e94d2946bac0bee0a'
+# Embedding models the harness evaluates, pinned to the snapshots recorded in reports/*.json meta.models.
+MODEL_REVISIONS = {
+    'all-MiniLM-L6-v2': '1110a243fdf4706b3f48f1d95db1a4f5529b4d41',
+    'all-mpnet-base-v2': 'e8c3b32edf5434bc2275fc9bab85f82640a19130',
+}
 
 
 def tie_ranks(scores):
@@ -66,7 +71,7 @@ class HybridRanker:
 
         # Initialize semantic model
         print(f"Loading semantic model: {model_name}...")
-        self.model = SentenceTransformer(model_name)
+        self.model = SentenceTransformer(model_name, revision=MODEL_REVISIONS.get(model_name))
 
         # Create product embeddings
         print("Generating product embeddings (this may take a few minutes)...")

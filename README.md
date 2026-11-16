@@ -104,6 +104,7 @@ Relevance is graded 0 to 3. Products without a label for the query count as rele
 
 - **Split.** [`data/split_v1.json`](data/split_v1.json) puts 58 of the 288 training queries in a locked set and the other 230 in five dev folds (seed 20261113).
 - **Tuning.** Per fold, the model (MiniLM or mpnet) and BM25 weight (0 to 1 in steps of 0.05) are chosen on the four other folds and scored on the held-out fold. Output: [`reports/cv_baseline.json`](reports/cv_baseline.json).
+- **Pinned models.** The harness loads both embedding models at the revisions in `semantic_ranker.MODEL_REVISIONS`, the snapshots recorded in the reports' `meta.models`.
 - **Locked set.** `--final` scores BM25 and the config pinned in `search.py` on the 58 locked queries, and refuses to run if `reports/holdout_final.json` already exists. It has been run once; do not run it again.
 
 The `sha256` values recorded in the reports' `meta` were computed on a Windows CRLF checkout. `tests/test_recorded_hashes.py` recomputes them from the committed files, and `.gitattributes` now checks JSON out with LF on every platform.

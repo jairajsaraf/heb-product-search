@@ -21,7 +21,7 @@ import torch  # noqa: E402
 from huggingface_hub import snapshot_download  # noqa: E402
 
 from baseline_ranker import BM25Ranker, load_json  # noqa: E402
-from semantic_ranker import HybridRanker  # noqa: E402
+from semantic_ranker import MODEL_REVISIONS, HybridRanker  # noqa: E402
 from tamu25.evaluate import evaluate_submission  # noqa: E402
 
 DEPTHS = (30, 50)
@@ -33,9 +33,10 @@ SPREAD_QUERIES = 5
 
 
 def revision_of(model_name):
-    """Commit hash of the snapshot the default ref resolves to; honours HF_HOME / cache env vars,
-    the same resolution SentenceTransformer(model_name) uses."""
-    return Path(snapshot_download(f"sentence-transformers/{model_name}", local_files_only=True)).name
+    """Commit hash of the snapshot HybridRanker loads (the pin in semantic_ranker.MODEL_REVISIONS, or the
+    default ref for an unpinned model), from the local cache; honours HF_HOME / cache env vars."""
+    return Path(snapshot_download(f"sentence-transformers/{model_name}", revision=MODEL_REVISIONS.get(model_name),
+                                  local_files_only=True)).name
 
 
 def score(rows, labels_path):
