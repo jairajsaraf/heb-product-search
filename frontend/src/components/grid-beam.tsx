@@ -1,6 +1,6 @@
 // From Cult UI "Grid Beam" (MIT, Nolly Studio):
 // https://github.com/nolly-studio/cult-ui/blob/main/apps/www/registry/default/ui/grid-beam.tsx
-// Changed: the `cn` import path, and a "shelf" palette in this page's keyword, meaning and relevant colours.
+// Changed: the `cn` import path, a "shelf" palette in this page's keyword, meaning and relevant colours, and the frame loop now stops while inactive.
 "use client"
 
 import {
@@ -277,10 +277,13 @@ export type BeamCanvasRuntimeConfig = Readonly<{
 
 function useBeamCanvas(
   canvasRef: RefObject<HTMLCanvasElement | null>,
-  config: MutableRefObject<BeamCanvasRuntimeConfig>
+  config: MutableRefObject<BeamCanvasRuntimeConfig>,
+  running: boolean
 ) {
+  // animRef is null whenever no frame is pending (the loop is stopped).
   const animRef = useRef<number | null>(null)
   const startRef = useRef<number | null>(null)
+  const drawRef = useRef<((now: number) => void) | null>(null)
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: animation reads latest `config.current` each frame; only canvas mount should restart the loop.
   useEffect(() => {
@@ -324,7 +327,7 @@ function useBeamCanvas(
       ctx.clearRect(0, 0, w, h)
 
       if (!(active || fadingOut)) {
-        animRef.current = requestAnimationFrame(draw)
+        animRef.current = null
         return
       }
 
@@ -539,14 +542,25 @@ function useBeamCanvas(
       animRef.current = requestAnimationFrame(draw)
     }
 
+    drawRef.current = draw
     animRef.current = requestAnimationFrame(draw)
     return () => {
       if (animRef.current !== null) {
         cancelAnimationFrame(animRef.current)
       }
+      animRef.current = null
+      drawRef.current = null
       ro.disconnect()
     }
   }, [canvasRef])
+
+  // Restart a stopped loop. `active` goes false one render before `fadingOut` goes true, so the loop
+  // can stop in between; this effect starts it again when `running` turns true.
+  useEffect(() => {
+    if (running && animRef.current === null && drawRef.current) {
+      animRef.current = requestAnimationFrame(drawRef.current)
+    }
+  }, [running])
 }
 
 export type UseGridBeamOptions = Readonly<{
@@ -634,7 +648,7 @@ export function useGridBeam({
     breathe,
   }
 
-  useBeamCanvas(canvasRef, configRef)
+  useBeamCanvas(canvasRef, configRef, active || fadingOut)
 
   return {
     canvasRef,
