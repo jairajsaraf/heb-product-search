@@ -10,6 +10,33 @@ packages = [
 homepage = "https://gitlab.com/mlmodels/tamu-2025-heb"
 repository = "https://gitlab.com/mlmodels/tamu-2025-heb"
 
+[tool.poetry.dependencies]
+python = "^3.11"
+python-json-logger = "^2.0.7"
+python-dotenv = "^1.2.1"
+fire = "^0.7.1"
+pytz = "^2025.2"
+google-cloud-storage = "^3.5.0"
+rank-bm25 = "^0.2.2"
+sentence-transformers = "^2.2.2"
+numpy = "^1.24.0"
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "^1.4.3"
+mkdocs-material = "^9.1.15"
+mkdocstrings = {extras = ["python"], version = "^0.22.0"}
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.9.0"
+autoflake8 = "^0.4.1"
+flake8 = "^7.3.0"
+coverage = "^7.11.0"
+mypy = "^1.18.2"
+isort = "^7.0.0"
+autoflake = "^2.3.1"
+pytest = "^8.4.2"
+pytest-cov = "^7.0.0"
+
 [tool.mypy]
 python_version = "3.11"
 disallow_any_generics = true

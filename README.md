@@ -163,7 +163,7 @@ pip install -r requirements.txt
 pip install -r requirements-api.txt
 ```
 
-The first line installs the CPU build of torch; `requirements-api.txt` adds the API stack (FastAPI, uvicorn) that the API tests and the search service need. CI (`.github/workflows/ci.yml`) runs these same three install lines. Poetry is not used: `pyproject.toml` holds only package metadata and tool settings, `requirements*.txt` are the only dependency lists, and `make install` runs the same three lines.
+The first line installs the CPU build of torch; `requirements-api.txt` adds the API stack (FastAPI, uvicorn) that the API tests and the search service need. CI (`.github/workflows/ci.yml`) runs these same three install lines. Poetry is not maintained: `pyproject.toml` does not list the ML dependencies, and the stale `poetry.lock` was removed. The `Makefile` still runs commands through `poetry run` by default; override it with `make RUN= TAMU25="python -m tamu25.cli.main" <target>` (see Command-line tools).
 
 The first run downloads `all-MiniLM-L6-v2` from Hugging Face. sentence-transformers contacts the Hub even for cached models unless you set `HF_HUB_OFFLINE=1`.
 
@@ -251,10 +251,9 @@ python -m tamu25.cli.main evaluate \
 
 Optional: `--queries_real` for `validate`, `--labels_real` for `evaluate`. `validate` checks, among other things, that each query has at least 30 results ([`tamu25/validate.py`](tamu25/validate.py)). `team-git-em` covers the 191 test queries, which have no labels here, so it validates but cannot be scored locally.
 
-Makefile targets (they run `python -m tamu25.cli.main` in the current environment; `make install` first):
+Makefile targets (default prefix `poetry run`; override with `make RUN= TAMU25="python -m tamu25.cli.main" ...`):
 
 ```bash
-make install
 make validate TEAM=team-git-em   # default goal
 make evaluate TEAM=<team>
 make info
@@ -305,15 +304,9 @@ ranker.rank("organic almond milk", top_k=50, bm25_weight=0.10, semantic_weight=0
 
 ## Not done
 
+- No licence file is in the repository, so no licence is granted or stated here.
 - No user-history personalisation, query expansion, ANN search or fine-tuning has been built or measured.
 - Cross-encoder reranking and RRF were measured and not kept (see "What was tried and not kept"). A cross-encoder tuned on grocery data was not tried.
-
-## Licence
-
-The code is under the MIT licence ([`LICENSE`](LICENSE)), except for the files below, which this licence does not cover:
-
-- The datathon starter kit (credited to Aidin Zadeh and Rajesh Chodavarapu), including later edits to these files: `Makefile`, `pyproject.toml`, `scripts/aggregate_leaderboard.py`, `tamu25/__init__.py`, `tamu25/api/__init__.py`, `tamu25/cli/main.py`, `tamu25/evaluate.py`, `tamu25/metrics.py`, `tamu25/validate.py`, `tests/__init__.py`, `tests/conftest.py`, `tests/test_evaluate.py`, `tests/test_validate.py` and `tests/data/`.
-- The datathon data and submissions: `data/` and `teams/`. Their terms are set by the organizers and H-E-B.
 
 ---
 
